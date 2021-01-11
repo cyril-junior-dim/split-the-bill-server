@@ -2,10 +2,8 @@ package com.splitthebill.server.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -15,7 +13,7 @@ public class PersonGroupExpense {
     @GeneratedValue
     private Long id;
 
-    private double splitRatio;
+    private BigDecimal splitRatio;
 
     private boolean isReviewed;
 
