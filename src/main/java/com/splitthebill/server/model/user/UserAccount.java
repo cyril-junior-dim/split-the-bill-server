@@ -23,6 +23,9 @@ public class UserAccount {
 
     private Date created;
 
+    @OneToOne
+    private Person person;
+
     @OneToMany(mappedBy = "userAccount")
     private List<UserAccountNotification> userAccountNotifications;
 

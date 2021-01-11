@@ -5,7 +5,9 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -20,5 +22,8 @@ public class Schedule {
     private FrequencyUnit frequencyUnit;
 
     private Date nextTrigger;
+
+    @OneToMany(mappedBy = "schedule")
+    List<ScheduledGroupExpense> scheduledGroupExpenses;
 
 }

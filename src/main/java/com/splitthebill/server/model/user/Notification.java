@@ -2,11 +2,9 @@ package com.splitthebill.server.model.user;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,5 +19,8 @@ public class Notification {
     private String description;
 
     private Date created;
+
+    @OneToMany(mappedBy = "notification")
+    private List<UserAccountNotification> userAccountNotifications;
 
 }

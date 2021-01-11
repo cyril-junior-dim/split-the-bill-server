@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -21,5 +22,8 @@ public class ScheduledGroupExpense extends Expense {
 
     @ManyToOne
     private Schedule schedule;
+
+    @OneToMany(mappedBy = "scheduledGroupExpense")
+    List<ScheduledPersonGroupExpense> scheduledPersonGroupExpenses;
 
 }
