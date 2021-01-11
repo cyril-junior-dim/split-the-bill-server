@@ -1,4 +1,5 @@
-package com.splitthebill.server.model;
+package com.splitthebill.server.model.user;
+
 
 import lombok.Data;
 
@@ -6,22 +7,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import java.math.BigDecimal;
+import java.util.Date;
 
-@Data
 @Entity
-public class PeriodicPersonGroupExpense {
+@Data
+public class Friendship {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private BigDecimal splitRatio;
+    @ManyToOne
+    private Person person1;
 
     @ManyToOne
-    private Person debtor;
+    private Person person2;
 
-    @ManyToOne
-    private PeriodicGroupExpense periodicGroupExpense;
-
+    private Date date;
 }

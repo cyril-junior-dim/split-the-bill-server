@@ -1,5 +1,7 @@
 package com.splitthebill.server.model;
 
+import com.splitthebill.server.model.expense.GroupExpense;
+import com.splitthebill.server.model.user.PersonGroup;
 import lombok.Data;
 
 import javax.persistence.*;

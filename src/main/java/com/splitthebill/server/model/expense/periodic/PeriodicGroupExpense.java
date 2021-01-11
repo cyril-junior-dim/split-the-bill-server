@@ -1,5 +1,7 @@
-package com.splitthebill.server.model;
+package com.splitthebill.server.model.expense.periodic;
 
+import com.splitthebill.server.model.Group;
+import com.splitthebill.server.model.expense.Expense;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,4 +1,4 @@
-package com.splitthebill.server.model;
+package com.splitthebill.server.model.expense;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,13 +8,10 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class GroupExpense extends Expense {
+public class OwnExpense extends Expense {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    private Group group;
 
 }
