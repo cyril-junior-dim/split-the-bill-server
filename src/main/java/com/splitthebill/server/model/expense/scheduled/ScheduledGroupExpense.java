@@ -1,4 +1,4 @@
-package com.splitthebill.server.model.expense.periodic;
+package com.splitthebill.server.model.expense.scheduled;
 
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.Expense;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class PeriodicGroupExpense extends Expense {
+public class ScheduledGroupExpense extends Expense {
 
     @Id
     @GeneratedValue
@@ -20,6 +20,6 @@ public class PeriodicGroupExpense extends Expense {
     private Group group;
 
     @ManyToOne
-    private PeriodicExpenseSchedule schedule;
+    private Schedule schedule;
 
 }

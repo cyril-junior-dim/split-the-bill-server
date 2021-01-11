@@ -1,4 +1,4 @@
-package com.splitthebill.server.model.expense.periodic;
+package com.splitthebill.server.model.expense.scheduled;
 
 public enum FrequencyUnit {
     DAY,

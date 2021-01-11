@@ -1,4 +1,4 @@
-package com.splitthebill.server.model.expense.periodic;
+package com.splitthebill.server.model.expense.scheduled;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Entity
-public class PeriodicExpenseSchedule {
+public class Schedule {
 
     @Id
     @GeneratedValue

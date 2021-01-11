@@ -1,4 +1,4 @@
-package com.splitthebill.server.model.expense.periodic;
+package com.splitthebill.server.model.expense.scheduled;
 
 import com.splitthebill.server.model.user.Person;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-public class PeriodicPersonGroupExpense {
+public class ScheduledPersonGroupExpense {
 
     @Id
     @GeneratedValue
@@ -23,6 +23,6 @@ public class PeriodicPersonGroupExpense {
     private Person debtor;
 
     @ManyToOne
-    private PeriodicGroupExpense periodicGroupExpense;
+    private ScheduledGroupExpense scheduledGroupExpense;
 
 }
