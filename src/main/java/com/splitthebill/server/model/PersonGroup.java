@@ -19,9 +19,9 @@ public class PersonGroup {
     private Date joined;
 
     @ManyToOne
-    Person person;
+    private Person person;
 
     @ManyToOne
-    Group group;
+    private Group group;
 
 }

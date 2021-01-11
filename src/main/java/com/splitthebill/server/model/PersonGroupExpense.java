@@ -18,9 +18,9 @@ public class PersonGroupExpense {
     private boolean isReviewed;
 
     @ManyToOne
-    Person debtor;
+    private Person debtor;
 
     @ManyToOne
-    GroupExpense expense;
+    private GroupExpense expense;
 
 }

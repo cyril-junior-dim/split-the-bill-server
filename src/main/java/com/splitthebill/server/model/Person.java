@@ -24,6 +24,15 @@ public class Person {
     @OneToMany(mappedBy = "person1")
     private List<Friendship> friendships;
 
+    @OneToMany(mappedBy = "person")
+    private List<PersonGroup> personGroups;
+
+    @OneToMany(mappedBy = "debtor")
+    private List<PersonGroupExpense> personGroupExpenses;
+
+    @OneToMany(mappedBy = "debtor")
+    private List<PeriodicPersonGroupExpense> periodicPersonGroupExpenses;
+
     @ManyToOne
     private Currency preferredCurrency;
 

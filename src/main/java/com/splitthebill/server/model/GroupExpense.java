@@ -3,9 +3,7 @@ package com.splitthebill.server.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -14,6 +12,9 @@ public class GroupExpense extends Expense {
 
     @Id
     @GeneratedValue
-    protected Long id;
+    private Long id;
+
+    @ManyToOne
+    private Group group;
 
 }
