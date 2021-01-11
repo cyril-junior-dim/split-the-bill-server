@@ -21,5 +21,9 @@ public class Person {
     private UserAccount userAccount;
 
     @OneToMany
-    List<Friendship> friendships;
+    private List<Friendship> friendships;
+
+    @ManyToOne
+    private Currency preferredCurrency;
+
 }
