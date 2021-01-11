@@ -13,8 +13,11 @@ public class UserAccountNotification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean isReviewed;
+    private boolean isReviewed;
 
     @ManyToOne
     private Notification notification;
+
+    @ManyToOne
+    private UserAccount userAccount;
 }

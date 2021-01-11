@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "`group`")
 public class Group {
 
     @Id
@@ -17,10 +18,10 @@ public class Group {
 
     private String photoPath;
 
-    @ManyToMany
+    @OneToMany(mappedBy = "group")
     private List<PersonGroup> members;
 
-    @OneToMany
+    @OneToMany(mappedBy = "group")
     private List<GroupExpense> expenses;
 
 }
