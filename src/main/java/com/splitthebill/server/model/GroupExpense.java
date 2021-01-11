@@ -14,6 +14,6 @@ public class GroupExpense extends Expense {
 
     @Id
     @GeneratedValue
-    private Long id;
+    protected Long id;
 
 }
