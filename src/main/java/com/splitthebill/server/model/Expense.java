@@ -15,4 +15,6 @@ public abstract class Expense {
 
     private String receiptPhoto;
 
+    private Person creditor;
+
 }
