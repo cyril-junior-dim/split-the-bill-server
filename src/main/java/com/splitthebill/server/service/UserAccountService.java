@@ -20,6 +20,7 @@ public class UserAccountService {
 
     public UserAccount createUserAccount(UserAccountCreateDto accountDto) throws Exception {
         //TODO implement rest
-        return null;
+        UserAccount userAccount = new UserAccount(accountDto);
+        return userAccountRepository.save(userAccount);
     }
 }

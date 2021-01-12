@@ -1,17 +1,14 @@
 package com.splitthebill.server.model.user;
 
 
-import lombok.AllArgsConstructor;
+import com.splitthebill.server.dto.UserAccountCreateDto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,6 +21,7 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     //TODO store password in the right way
@@ -39,5 +37,11 @@ public class UserAccount {
 
     @OneToMany(mappedBy = "userAccount")
     private List<UserAccountNotification> userAccountNotifications;
+
+    public UserAccount(UserAccountCreateDto accountCreateDto) {
+        this.username = accountCreateDto.getUsername();
+        this.password = accountCreateDto.getPassword();
+        this.email = accountCreateDto.getEmail();
+    }
 
 }
