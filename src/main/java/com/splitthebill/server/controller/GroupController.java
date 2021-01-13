@@ -12,7 +12,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/group")
+@RequestMapping(path = "/groups")
 public class GroupController {
 
     @NonNull
