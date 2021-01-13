@@ -6,10 +6,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RepositoryRestController
 @RequestMapping(path = "/userAccounts")
@@ -30,8 +30,13 @@ public class UserAccountController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUserAccount(UserAccountCreateDto account) {
+    public ResponseEntity<?> createUserAccount(@Valid @RequestBody UserAccountCreateDto account,
+                                               BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                //TODO make it work.
+                return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            }
             return ResponseEntity.ok().body(userAccountService.createUserAccount(account));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

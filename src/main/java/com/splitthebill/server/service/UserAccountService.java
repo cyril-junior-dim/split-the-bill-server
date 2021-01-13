@@ -23,4 +23,5 @@ public class UserAccountService {
         UserAccount userAccount = new UserAccount(accountDto);
         return userAccountRepository.save(userAccount);
     }
+
 }

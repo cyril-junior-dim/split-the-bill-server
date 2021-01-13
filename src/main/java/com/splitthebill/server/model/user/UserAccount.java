@@ -2,9 +2,7 @@ package com.splitthebill.server.model.user;
 
 
 import com.splitthebill.server.dto.UserAccountCreateDto;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -15,7 +13,10 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserAccount {
+
+    //TODO isConfirmed? -> createPerson()
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +40,9 @@ public class UserAccount {
     private List<UserAccountNotification> userAccountNotifications;
 
     public UserAccount(UserAccountCreateDto accountCreateDto) {
-        this.username = accountCreateDto.getUsername();
-        this.password = accountCreateDto.getPassword();
-        this.email = accountCreateDto.getEmail();
+        this.username = accountCreateDto.username;
+        this.password = accountCreateDto.password;
+        this.email = accountCreateDto.email;
     }
 
 }
