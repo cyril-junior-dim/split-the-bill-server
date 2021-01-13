@@ -2,6 +2,8 @@ package com.splitthebill.server.model.user;
 
 import com.splitthebill.server.model.Group;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -9,6 +11,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class PersonGroup {
 
     @Id
@@ -17,6 +20,7 @@ public class PersonGroup {
 
     private BigDecimal personGroupBalance;
 
+    @CreationTimestamp
     private Date joined;
 
     @ManyToOne
@@ -25,4 +29,9 @@ public class PersonGroup {
     @ManyToOne
     private Group group;
 
+    public PersonGroup(Person person, Group group) {
+        this.person = person;
+        this.group = group;
+        personGroupBalance = BigDecimal.ZERO;
+    }
 }
