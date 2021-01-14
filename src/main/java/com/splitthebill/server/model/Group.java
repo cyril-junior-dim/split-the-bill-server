@@ -20,6 +20,8 @@ public class Group {
 
     private String photoPath;
 
+    //TODO? boolean isSettledUp
+
     @OneToMany(mappedBy = "group")
     private List<PersonGroup> members;
 
