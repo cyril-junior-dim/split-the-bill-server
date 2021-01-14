@@ -1,6 +1,6 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.dto.GroupCreateDto;
+import com.splitthebill.server.dto.group.GroupCreateDto;
 import com.splitthebill.server.service.GroupService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

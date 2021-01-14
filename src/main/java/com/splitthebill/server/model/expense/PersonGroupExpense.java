@@ -16,7 +16,7 @@ public class PersonGroupExpense {
 
     private BigDecimal splitRatio;
 
-    private boolean isReviewed;
+    private boolean isReviewed = false;
 
     @ManyToOne
     private PersonGroup debtor;
@@ -24,4 +24,9 @@ public class PersonGroupExpense {
     @ManyToOne
     private GroupExpense expense;
 
+    public PersonGroupExpense(double splitRatio, PersonGroup debtor, GroupExpense expense) {
+        this.splitRatio = BigDecimal.valueOf(splitRatio);
+        this.debtor = debtor;
+        this.expense = expense;
+    }
 }
