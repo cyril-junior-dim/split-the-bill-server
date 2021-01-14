@@ -1,6 +1,7 @@
 package com.splitthebill.server.model.user;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.splitthebill.server.dto.UserAccountCreateDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,9 +26,9 @@ public class UserAccount {
     @Column(unique = true)
     private String username;
 
-    //TODO store password in the right way
     private String password;
 
+    @Column(unique = true)
     private String email;
 
     @CreationTimestamp
@@ -36,6 +37,7 @@ public class UserAccount {
     @OneToOne
     private Person person;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "userAccount")
     private List<UserAccountNotification> userAccountNotifications;
 

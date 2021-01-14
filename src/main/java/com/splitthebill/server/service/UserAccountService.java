@@ -7,6 +7,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
@@ -16,6 +18,10 @@ public class UserAccountService {
 
     public UserAccount getUserAccountById(Long id) throws Exception {
         return userAccountRepository.findById(id).orElseThrow(Exception::new);
+    }
+
+    public UserAccount getUserAccountByUsername(String username) throws EntityNotFoundException {
+        return userAccountRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 
     public UserAccount createUserAccount(UserAccountCreateDto accountDto) throws Exception {
