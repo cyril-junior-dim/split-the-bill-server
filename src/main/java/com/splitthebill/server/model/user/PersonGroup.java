@@ -34,4 +34,13 @@ public class PersonGroup {
         this.group = group;
         personGroupBalance = BigDecimal.ZERO;
     }
+
+    public void addToBalance(BigDecimal amount){
+        personGroupBalance = personGroupBalance.add(amount);
+    }
+
+    public void subtractFromBalance(BigDecimal amount){
+        personGroupBalance = personGroupBalance.subtract(amount);
+    }
+
 }

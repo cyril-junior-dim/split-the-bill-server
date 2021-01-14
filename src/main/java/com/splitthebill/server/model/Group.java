@@ -28,4 +28,7 @@ public class Group {
     @OneToMany(mappedBy = "group")
     private List<GroupExpense> expenses;
 
+    public void addExpense(GroupExpense expense) {
+        expenses.add(expense);
+    }
 }

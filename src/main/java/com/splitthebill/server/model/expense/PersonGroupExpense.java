@@ -1,6 +1,6 @@
 package com.splitthebill.server.model.expense;
 
-import com.splitthebill.server.model.user.Person;
+import com.splitthebill.server.model.user.PersonGroup;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -19,7 +19,7 @@ public class PersonGroupExpense {
     private boolean isReviewed;
 
     @ManyToOne
-    private Person debtor;
+    private PersonGroup debtor;
 
     @ManyToOne
     private GroupExpense expense;
