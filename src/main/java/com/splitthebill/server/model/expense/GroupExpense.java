@@ -11,7 +11,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @NoArgsConstructor
-@Builder
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity

@@ -33,7 +33,7 @@ public class Person {
     @OneToMany(mappedBy = "person")
     private List<PersonGroup> personGroups;
 
-    @OneToMany(mappedBy = "creditor")
+    @OneToMany(mappedBy = "owner")
     private List<OwnExpense> ownExpenses;
 
     @OneToMany(mappedBy = "creditor")
