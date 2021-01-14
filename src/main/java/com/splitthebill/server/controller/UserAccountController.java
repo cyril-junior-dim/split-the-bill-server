@@ -4,14 +4,13 @@ import com.splitthebill.server.dto.UserAccountCreateDto;
 import com.splitthebill.server.service.UserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@RepositoryRestController
+@RestController
 @RequestMapping(path = "/userAccounts")
 @RequiredArgsConstructor
 public class UserAccountController {
