@@ -19,7 +19,7 @@ public class JwtUtils {
     public String generateJwtTokenForBasicAccount(Authentication authentication) {
         UserDetailsImpl userAccount = (UserDetailsImpl) authentication.getPrincipal();
 
-        return generateJwtToken(userAccount.getEmail());
+        return generateJwtToken(userAccount.getUsername());
     }
 
     public String generateJwtToken(String subject) {
