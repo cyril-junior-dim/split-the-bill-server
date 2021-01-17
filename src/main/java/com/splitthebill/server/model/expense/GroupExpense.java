@@ -2,7 +2,6 @@ package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.user.PersonGroup;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
