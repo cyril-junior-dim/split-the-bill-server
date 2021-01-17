@@ -1,12 +1,11 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.dto.UserAccountCreateDto;
-import com.splitthebill.server.service.UserAccountService;
+import com.splitthebill.server.dto.BasicUserAccountCreateDto;
+import com.splitthebill.server.service.BasicUserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -21,22 +20,22 @@ import java.util.Map;
 public class UserAccountController {
 
     @NonNull
-    UserAccountService userAccountService;
+    BasicUserAccountService basicUserAccountService;
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getUserAccount(@PathVariable Long id) {
         //TODO add links
         try {
-            return ResponseEntity.ok().body(userAccountService.getUserAccountById(id));
+            return ResponseEntity.ok().body(basicUserAccountService.getUserAccountById(id));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> createUserAccount(@Valid @RequestBody UserAccountCreateDto account) {
+    public ResponseEntity<?> createUserAccount(@Valid @RequestBody BasicUserAccountCreateDto account) {
         try {
-            return ResponseEntity.ok().body(userAccountService.createUserAccount(account));
+            return ResponseEntity.ok().body(basicUserAccountService.createUserAccount(account));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

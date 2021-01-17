@@ -1,7 +1,8 @@
 package com.splitthebill.server.security;
 
+import com.splitthebill.server.model.user.BasicUserAccount;
 import com.splitthebill.server.model.user.UserAccount;
-import com.splitthebill.server.service.UserAccountService;
+import com.splitthebill.server.service.BasicUserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +17,12 @@ import javax.transaction.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @NonNull
-    UserAccountService userAccountService;
+    BasicUserAccountService basicUserAccountService;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount userAccount = userAccountService.getUserAccountByUsername(username);
+        BasicUserAccount userAccount = basicUserAccountService.getUserAccountByUsername(username);
 
         return UserDetailsImpl.build(userAccount);
     }

@@ -1,7 +1,7 @@
 package com.splitthebill.server.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.splitthebill.server.model.user.UserAccount;
+import com.splitthebill.server.model.user.BasicUserAccount;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +32,7 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(UserAccount user) {
+    public static UserDetailsImpl build(BasicUserAccount user) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserDetailsImpl(

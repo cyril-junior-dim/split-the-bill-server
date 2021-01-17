@@ -1,7 +1,8 @@
 package com.splitthebill.server.controller;
 
+import com.splitthebill.server.model.user.BasicUserAccount;
 import com.splitthebill.server.model.user.UserAccount;
-import com.splitthebill.server.service.UserAccountService;
+import com.splitthebill.server.service.BasicUserAccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +27,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserAccountControllerTest {
 
     @MockBean
-    private UserAccountService userAccountService;
+    private BasicUserAccountService basicUserAccountService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void testGetUserAccount() throws Exception {
-        UserAccount userAccount = UserAccount.builder()
+        BasicUserAccount userAccount = BasicUserAccount.builder()
                 .username("damien")
                 .email("garbalad@gmail.com")
                 .build();
-        when(userAccountService.getUserAccountById(1L))
+        when(basicUserAccountService.getUserAccountById(1L))
                 .thenReturn(userAccount);
         mockMvc.perform(get("/userAccounts/{id}", 1))
                 .andExpect(status().isOk())

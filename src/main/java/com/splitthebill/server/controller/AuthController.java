@@ -1,11 +1,11 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.dto.UserAccountCreateDto;
 import com.splitthebill.server.dto.JwtResponseDto;
 import com.splitthebill.server.dto.LoginRequestDto;
+import com.splitthebill.server.dto.BasicUserAccountCreateDto;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.security.UserDetailsImpl;
-import com.splitthebill.server.service.UserAccountService;
+import com.splitthebill.server.service.BasicUserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
     @NonNull
-    UserAccountService userAccountService;
+    BasicUserAccountService basicUserAccountService;
 
     @NonNull
     PasswordEncoder encoder;
@@ -46,7 +46,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwt = jwtUtils.generateJwtTokenForBasicAccount(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
@@ -61,13 +61,12 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserAccountCreateDto userAccount) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody BasicUserAccountCreateDto userAccount) {
         userAccount.password = encoder.encode(userAccount.password);
         try{
-            userAccountService.createUserAccount(userAccount);
+            basicUserAccountService.createUserAccount(userAccount);
         }catch (Exception ignored){}
 
         return ResponseEntity.ok().build();
     }
-
 }

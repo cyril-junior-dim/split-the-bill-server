@@ -48,4 +48,14 @@ public class Person {
     @ManyToOne
     private Currency preferredCurrency;
 
+    protected Person(){
+
+    }
+
+    public Person(UserAccount userAccount, String name){
+        this.userAccount = userAccount;
+        this.name = name;
+        this.overallBalance = BigDecimal.ZERO;
+        // TODO set default currency
+    }
 }

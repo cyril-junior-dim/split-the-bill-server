@@ -1,6 +1,5 @@
 package com.splitthebill.server.security;
 
-import com.splitthebill.server.model.user.UserAccount;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -17,11 +16,15 @@ public class JwtUtils {
     @Value("${splitthebill.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateJwtTokenForBasicAccount(Authentication authentication) {
         UserDetailsImpl userAccount = (UserDetailsImpl) authentication.getPrincipal();
 
+        return generateJwtToken(userAccount.getEmail());
+    }
+
+    public String generateJwtToken(String subject) {
         return Jwts.builder()
-                .setSubject(userAccount.getUsername())
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
