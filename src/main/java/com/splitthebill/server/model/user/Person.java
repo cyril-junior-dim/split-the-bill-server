@@ -1,5 +1,6 @@
 package com.splitthebill.server.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.expense.Expense;
 import com.splitthebill.server.model.expense.GroupExpense;
@@ -7,14 +8,18 @@ import com.splitthebill.server.model.expense.OwnExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
 import com.splitthebill.server.model.expense.scheduled.ScheduledPersonGroupExpense;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Person {
+public class Person extends RepresentationModel<Person> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +29,7 @@ public class Person {
 
     private BigDecimal overallBalance;
 
+    @JsonIgnore
     @OneToOne
     private UserAccount userAccount;
 
@@ -56,6 +62,11 @@ public class Person {
         this.userAccount = userAccount;
         this.name = name;
         this.overallBalance = BigDecimal.ZERO;
-        // TODO set default currency
+        this.friendships = List.of();
+        this.personGroups = List.of();
+        this.ownExpenses = List.of();
+        this.groupExpenses = List.of();
+        this.personGroupExpenses = List.of();
+        this.scheduledPersonGroupExpenses = List.of();
     }
 }

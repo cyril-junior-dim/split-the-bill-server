@@ -27,13 +27,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return UserDetailsImpl.build(loadUserAccountByUsername(username));
+    }
+
+    public UserAccount loadUserAccountByUsername(String username) {
         UserAccount userAccount;
         try {
             userAccount = basicUserAccountService.getUserAccountByUsername(username);
         }catch (EntityNotFoundException e){
             userAccount = thirdPartyUserAccountService.getUserAccountByEmail(username);
         }
-        return UserDetailsImpl.build(userAccount);
+        return userAccount;
     }
 }
 
