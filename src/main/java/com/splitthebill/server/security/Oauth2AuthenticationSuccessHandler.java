@@ -27,6 +27,9 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
     @NonNull
     private RedirectStrategy redirectStrategy;
 
+    @NonNull
+    private JwtUtils jwtUtils;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
@@ -45,6 +48,11 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
         } catch (EntityNotFoundException e) {
             account = thirdPartyUserAccountService.createUserAccount(userAccountCreateDto);
         }
-        this.redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/auth/signin");
+
+        String userToken = jwtUtils.generateJwtToken(account.getEmail());
+
+        // TODO redirect to client application using deep link
+        this.redirectStrategy
+                .sendRedirect(httpServletRequest, httpServletResponse, "/auth/tempThirdPartyEndpoint/"+userToken);
     }
 }

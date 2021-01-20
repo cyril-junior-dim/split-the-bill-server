@@ -42,6 +42,12 @@ public class AuthController {
     @NonNull
     JwtUtils jwtUtils;
 
+    // This is temp endpoint to make testing easier, will be removed when connecting with client app
+    @GetMapping("/tempThirdPartyEndpoint/{token}")
+    public ResponseEntity<?> getThirdPartyToken(@PathVariable String token){
+        return ResponseEntity.ok(token);
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
 

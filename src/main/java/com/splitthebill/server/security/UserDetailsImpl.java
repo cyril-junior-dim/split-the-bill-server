@@ -2,6 +2,8 @@ package com.splitthebill.server.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.splitthebill.server.model.user.BasicUserAccount;
+import com.splitthebill.server.model.user.ThirdPartyUserAccount;
+import com.splitthebill.server.model.user.UserAccount;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,48 +14,47 @@ import java.util.Objects;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private Long id;
-
     private String username;
-
-    private String email;
 
     @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
+    public UserDetailsImpl(String username, String password,
                            Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
         this.username = username;
-        this.email = email;
         this.password = password;
         this.authorities = authorities;
+    }
+
+    public static UserDetailsImpl build(UserAccount user) {
+        if(user instanceof BasicUserAccount)
+            return UserDetailsImpl.build((BasicUserAccount) user);
+        return UserDetailsImpl.build((ThirdPartyUserAccount) user);
     }
 
     public static UserDetailsImpl build(BasicUserAccount user) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserDetailsImpl(
-                user.getId(),
                 user.getUsername(),
-                user.getEmail(),
                 user.getPassword(),
+                authorities);
+    }
+
+    public static UserDetailsImpl build(ThirdPartyUserAccount user) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new UserDetailsImpl(
+                user.getEmail(),
+                user.getEmail(),
                 authorities);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     @Override
@@ -93,6 +94,6 @@ public class UserDetailsImpl implements UserDetails {
         if (o == null || getClass() != o.getClass())
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
+        return Objects.equals(username, user.username);
     }
 }
