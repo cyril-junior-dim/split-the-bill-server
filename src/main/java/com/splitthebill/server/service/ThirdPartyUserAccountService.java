@@ -2,6 +2,7 @@ package com.splitthebill.server.service;
 
 import com.splitthebill.server.dto.ThirdPartyUserAccountCreateDto;
 import com.splitthebill.server.model.user.ThirdPartyUserAccount;
+import com.splitthebill.server.repository.CurrencyRepository;
 import com.splitthebill.server.repository.ThirdPartyUserAccountRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,9 @@ public class ThirdPartyUserAccountService {
 
     @NonNull
     ThirdPartyUserAccountRepository thirdPartyUserAccountRepository;
+
+    @NonNull
+    CurrencyRepository currencyRepository;
 
 
     public ThirdPartyUserAccount getUserAccountById(Long id) throws Exception {
