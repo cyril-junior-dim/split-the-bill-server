@@ -30,7 +30,7 @@ public class Person extends RepresentationModel<Person> {
     private BigDecimal overallBalance;
 
     @JsonIgnore
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     private UserAccount userAccount;
 
     @OneToMany(mappedBy = "person1")

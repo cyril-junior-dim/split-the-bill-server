@@ -34,7 +34,8 @@ public class CurrencyUpdater {
     @Value("${splitthebill.app.currencyUrl}")
     private String fetchUrl;
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 86400000)
+//    TODO enable in production - do not want to overuse endpoint
+//    @Scheduled(initialDelay = 1000, fixedDelay = 86400000)
     public void updateCurrencies() {
         List<Currency> saveData = new ArrayList<>();
         CurrencyApiResponse response = this.restTemplate.getForObject(fetchUrl, CurrencyApiResponse.class);

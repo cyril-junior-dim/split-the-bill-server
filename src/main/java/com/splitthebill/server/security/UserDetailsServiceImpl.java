@@ -1,6 +1,5 @@
 package com.splitthebill.server.security;
 
-import com.splitthebill.server.model.user.BasicUserAccount;
 import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.service.BasicUserAccountService;
 import com.splitthebill.server.service.ThirdPartyUserAccountService;

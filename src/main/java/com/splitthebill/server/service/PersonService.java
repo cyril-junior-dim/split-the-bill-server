@@ -5,6 +5,7 @@ import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.repository.CurrencyRepository;
 import com.splitthebill.server.repository.PersonRepository;
+import com.splitthebill.server.repository.UserAccountRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class PersonService {
 
     public Person createPerson(UserAccount userAccount, PersonCreateDto personCreateDto) {
         Person person = new Person(userAccount, personCreateDto.name);
+        person.getUserAccount().setPerson(person);
         person.setPreferredCurrency(currencyRepository.findCurrencyByAbbreviation("EUR").orElseThrow(EntityNotFoundException::new));
         return personRepository.save(person);
     }
