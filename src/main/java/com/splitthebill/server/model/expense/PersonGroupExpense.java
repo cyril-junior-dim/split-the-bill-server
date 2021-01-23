@@ -2,12 +2,14 @@ package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.user.PersonGroup;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class PersonGroupExpense {
 
     @Id
