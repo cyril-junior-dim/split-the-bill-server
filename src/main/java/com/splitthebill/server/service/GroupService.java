@@ -34,13 +34,16 @@ public class GroupService {
     public Group createGroup(GroupCreateDto groupDto) throws EntityNotFoundException {
         Group group = new Group();
         group.setName(groupDto.name);
+        group = groupRepository.save(group);
         LinkedList<PersonGroup> members = new LinkedList<>();
         for (Long id : groupDto.membersIds) {
             Person person = personService.getPersonById(id);
-            PersonGroup groupPerson = new PersonGroup(person, group);
-            members.add(groupPerson);
+            PersonGroup personGroup = new PersonGroup(person, group);
+            personGroupRepository.save(personGroup);
+            members.add(personGroup);
         }
         group.setMembers(members);
+        group = groupRepository.save(group);
         return group;
     }
 
