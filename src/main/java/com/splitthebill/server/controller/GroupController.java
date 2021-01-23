@@ -7,17 +7,11 @@ import com.splitthebill.server.model.Group;
 import com.splitthebill.server.service.GroupService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +20,8 @@ public class GroupController {
 
     @NonNull
     private final GroupService groupService;
+
+    //TODO authentication
 
     @PostMapping
     public ResponseEntity<?> createGroup(@Valid @RequestBody GroupCreateDto group,
@@ -51,8 +47,8 @@ public class GroupController {
         }
     }
 
-    @PostMapping(path = "/addExpense")
-    public ResponseEntity<?> createExpense(@Valid GroupExpenseCreateDto expenseDto) {
+    @PostMapping(path = "/expenses")
+    public ResponseEntity<?> createExpense(@Valid @RequestBody GroupExpenseCreateDto expenseDto) {
         try {
             groupService.addExpense(expenseDto);
             return ResponseEntity.ok().build();

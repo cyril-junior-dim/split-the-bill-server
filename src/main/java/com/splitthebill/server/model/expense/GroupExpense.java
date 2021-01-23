@@ -25,6 +25,6 @@ public class GroupExpense extends Expense {
     @ManyToOne
     private PersonGroup creditor;
 
-    @OneToMany(mappedBy = "expense")
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
     private List<PersonGroupExpense> personGroupExpenses;
 }

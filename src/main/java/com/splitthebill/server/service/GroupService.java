@@ -8,6 +8,7 @@ import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
+import com.splitthebill.server.repository.GroupExpenseRepository;
 import com.splitthebill.server.repository.GroupRepository;
 import com.splitthebill.server.repository.PersonGroupRepository;
 import lombok.NonNull;
@@ -24,6 +25,9 @@ public class GroupService {
 
     @NonNull
     private final GroupRepository groupRepository;
+
+    @NonNull
+    private final GroupExpenseRepository groupExpenseRepository;
 
     @NonNull
     private final PersonService personService;
@@ -55,6 +59,7 @@ public class GroupService {
         GroupExpense groupExpense = new GroupExpense();
         Group group = getGroupById(expenseDto.groupId);
         groupExpense.setGroup(group);
+        groupExpense.setTitle(expenseDto.title);
         PersonGroup creditor = personGroupRepository.findById(expenseDto.creditorId)
                 .orElseThrow(EntityNotFoundException::new);
         groupExpense.setCreditor(creditor);
@@ -69,6 +74,7 @@ public class GroupService {
         }
         groupExpense.setPersonGroupExpenses(debtors);
         group.addExpense(groupExpense);
+        groupExpenseRepository.save(groupExpense);
     }
 
 }
