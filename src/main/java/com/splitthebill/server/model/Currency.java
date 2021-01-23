@@ -20,6 +20,7 @@ public class Currency {
     private Long id;
 
     @NonNull
+    @Column(unique = true)
     private String abbreviation;
 
     @Column(precision = 19, scale = 9)
