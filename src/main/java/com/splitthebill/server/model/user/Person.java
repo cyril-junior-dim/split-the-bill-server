@@ -14,8 +14,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -28,8 +27,6 @@ public class Person extends RepresentationModel<Person> {
     private Long id;
 
     private String name;
-
-    private BigDecimal overallBalance = BigDecimal.ZERO;
 
     @JsonIgnore
     @OneToOne(cascade=CascadeType.ALL)
@@ -55,6 +52,12 @@ public class Person extends RepresentationModel<Person> {
 
     @ManyToOne
     private Currency preferredCurrency;
+
+    @ElementCollection
+    @CollectionTable(name = "person_balance")
+    @MapKeyJoinColumn(name = "currency_id")
+    @Column(name = "balance")
+    private Map<Currency, BigDecimal> balances = new HashMap<>();
 
     public Person(UserAccount userAccount, String name){
         this.userAccount = userAccount;

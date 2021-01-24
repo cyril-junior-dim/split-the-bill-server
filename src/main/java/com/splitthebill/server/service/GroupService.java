@@ -3,11 +3,13 @@ package com.splitthebill.server.service;
 import com.splitthebill.server.dto.group.ExpenseParticipantCreateDto;
 import com.splitthebill.server.dto.group.GroupCreateDto;
 import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
+import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
+import com.splitthebill.server.repository.CurrencyRepository;
 import com.splitthebill.server.repository.GroupExpenseRepository;
 import com.splitthebill.server.repository.GroupRepository;
 import com.splitthebill.server.repository.PersonGroupRepository;
@@ -35,6 +37,9 @@ public class GroupService {
     @NonNull
     private final PersonGroupRepository personGroupRepository;
 
+    @NonNull
+    private final CurrencyRepository currencyRepository;
+
     public Group createGroup(GroupCreateDto groupDto) throws EntityNotFoundException {
         Group group = new Group();
         group.setName(groupDto.name);
@@ -58,8 +63,11 @@ public class GroupService {
     public void addExpense(GroupExpenseCreateDto expenseDto) throws Exception {
         GroupExpense groupExpense = new GroupExpense();
         Group group = getGroupById(expenseDto.groupId);
+        Currency currency = currencyRepository.findCurrencyByAbbreviation(expenseDto.currencyAbbreviation)
+                .orElseThrow(EntityNotFoundException::new);
         groupExpense.setGroup(group);
         groupExpense.setTitle(expenseDto.title);
+        groupExpense.setCurrency(currency);
         PersonGroup creditor = personGroupRepository.findById(expenseDto.creditorId)
                 .orElseThrow(EntityNotFoundException::new);
         groupExpense.setCreditor(creditor);

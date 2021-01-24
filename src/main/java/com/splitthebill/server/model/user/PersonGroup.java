@@ -1,5 +1,6 @@
 package com.splitthebill.server.model.user;
 
+import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 @Data
 @Entity
@@ -18,8 +19,6 @@ public class PersonGroup {
     @GeneratedValue
     private Long id;
 
-    private BigDecimal personGroupBalance;
-
     @CreationTimestamp
     private Date joined;
 
@@ -29,18 +28,34 @@ public class PersonGroup {
     @ManyToOne
     private Group group;
 
+    @ElementCollection
+    @CollectionTable(name = "person_group_balance")
+    @MapKeyJoinColumn(name = "currency_id")
+    @Column(name = "balance")
+    private Map<Currency, BigDecimal> balances = new HashMap<>();
+
     public PersonGroup(Person person, Group group) {
         this.person = person;
         this.group = group;
-        personGroupBalance = BigDecimal.ZERO;
+        this.balances.put(person.getPreferredCurrency(), BigDecimal.ZERO);
     }
 
-    public void addToBalance(BigDecimal amount){
-        personGroupBalance = personGroupBalance.add(amount);
+    public void addToBalance(Currency currency, BigDecimal amount){
+        if(balances.containsKey(currency)){
+            BigDecimal newBalance = balances.computeIfPresent(currency, (c, currBalance) -> currBalance.add(amount));
+            if(newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency()))
+                balances.remove(currency);
+        }else
+            balances.put(currency, amount);
     }
 
-    public void subtractFromBalance(BigDecimal amount){
-        personGroupBalance = personGroupBalance.subtract(amount);
+    public void subtractFromBalance(Currency currency, BigDecimal amount){
+        if(balances.containsKey(currency)){
+            BigDecimal newBalance = balances.computeIfPresent(currency, (c, currBalance) -> currBalance.subtract(amount));
+            if(newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency()))
+                balances.remove(currency);
+        }else
+            balances.put(currency, amount);
     }
 
 }

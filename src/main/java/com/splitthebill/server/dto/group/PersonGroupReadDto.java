@@ -1,9 +1,11 @@
 package com.splitthebill.server.dto.group;
 
+import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.user.PersonGroup;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Data
 public class PersonGroupReadDto {
@@ -11,12 +13,12 @@ public class PersonGroupReadDto {
     Long groupMemberId;
     Long personId;
     String name;
-    BigDecimal memberBalance;
+    Map<Currency, BigDecimal> memberBalance;
 
     public PersonGroupReadDto(PersonGroup member) {
         this.groupMemberId = member.getId();
         this.personId = member.getPerson().getId();
         this.name = member.getPerson().getName();
-        this.memberBalance = member.getPersonGroupBalance();
+        this.memberBalance = member.getBalances();
     }
 }
