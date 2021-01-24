@@ -5,6 +5,7 @@ import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.repository.FriendshipRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
@@ -48,13 +49,15 @@ public class FriendshipService {
     }
 
     public Friendship sendFriendshipRequest(Person issuer, Person receiver){
-        System.out.println(issuer.getName());
-        System.out.println(receiver.getName());
+        if(issuer == null || receiver == null)
+            throw new EntityNotFoundException();
+        if(issuer.equals(receiver))
+            throw new DataIntegrityViolationException("Friendship members cannot be the same person.");
         boolean isDuplicate = issuer.getFriendships()
                 .stream().anyMatch(friendship -> receiver.getFriendships()
                         .stream().anyMatch(friendship::relatesToSamePeopleAs));
         if(isDuplicate)
-            throw new EntityExistsException();
+            throw new EntityExistsException("Requested friendship already exists.");
         Friendship issuerToReceiver = new Friendship(issuer, receiver, true);
         Friendship receiverToIssuer = new Friendship(receiver, issuer, false);
         issuerToReceiver = friendshipRepository.save(issuerToReceiver);
