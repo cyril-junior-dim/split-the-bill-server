@@ -10,7 +10,6 @@ import com.splitthebill.server.security.UserDetailsServiceImpl;
 import com.splitthebill.server.service.BasicUserAccountService;
 import com.splitthebill.server.service.ThirdPartyUserAccountService;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,7 +22,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         UserDetailsServiceImpl.class,
         AuthEntryPointJwt.class,
         Oauth2AuthenticationSuccessHandler.class})
-@RunWith(SpringRunner.class)
 public class AuthControllerTest {
 
     @MockBean

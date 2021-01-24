@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class PersonService {
         Person person = new Person(userAccount, personCreateDto.name);
         person.getUserAccount().setPerson(person);
         person.setPreferredCurrency(currencyRepository.findCurrencyByAbbreviation("EUR").orElseThrow(EntityNotFoundException::new));
+        person.getBalances().put(person.getPreferredCurrency(), BigDecimal.ZERO);
         return personRepository.save(person);
     }
 

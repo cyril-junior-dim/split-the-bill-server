@@ -24,4 +24,7 @@ public class GroupExpenseCreateDto {
     @DecimalMin("0.01")
     public double amount;
 
+    @NotEmpty
+    public String currencyAbbreviation;
+
 }

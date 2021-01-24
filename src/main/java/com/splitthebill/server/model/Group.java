@@ -35,10 +35,11 @@ public class Group {
     public void addExpense(GroupExpense expense) {
         expenses.add(expense);
         BigDecimal amount = expense.getAmount();
-        expense.getCreditor().addToBalance(amount);
+        Currency currency = expense.getCurrency();
+        expense.getCreditor().addToBalance(currency, amount);
         for (PersonGroupExpense personGroupExpense : expense.getPersonGroupExpenses()) {
             BigDecimal toSubtract = amount.multiply(personGroupExpense.getSplitRatio());
-            personGroupExpense.getDebtor().subtractFromBalance(toSubtract);
+            personGroupExpense.getDebtor().subtractFromBalance(currency, toSubtract);
         }
     }
 }
