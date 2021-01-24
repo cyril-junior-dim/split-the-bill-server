@@ -46,21 +46,6 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.restdocs</groupId>
-            <artifactId>spring-restdocs-mockmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Security -->
         <dependency>
@@ -83,6 +68,26 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Docs -->
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -101,6 +106,8 @@
                         <configuration>
                             <backend>html</backend>
                             <doctype>book</doctype>
+                            <sourceDirectory>docs/asciidoc</sourceDirectory>
+                            <outputDirectory>docs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

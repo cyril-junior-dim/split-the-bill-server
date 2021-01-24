@@ -1,0 +1,45 @@
+= Split The Bill API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== User account
+
+=== Basic user account
+Basic user account requires a user to provide a username, password and email. Username and email has to be UNIQUE.
+
+==== Basic user account signup
+Sample request
+include::{snippets}/auth/register-user/http-request.adoc[]
+Request fields
+include::{snippets}/auth/register-user/request-fields.adoc[]
+Sample response
+include::{snippets}/auth/register-user/http-response.adoc[]
+Response fields
+include::{snippets}/auth/register-user/response-fields.adoc[]
+
+==== Basic user login
+Sample request
+include::{snippets}/auth/authenticate-user/http-request.adoc[]
+Request fields
+include::{snippets}/auth/authenticate-user/request-fields.adoc[]
+Sample response
+include::{snippets}/auth/authenticate-user/http-response.adoc[]
+Response fields
+include::{snippets}/auth/authenticate-user/response-fields.adoc[]
+
+=== Third party user account
+User can also choose to sign in using third party authentication providers. After sending the appropriate request,
+the account is created and the API redirects the user to the client app with token embedded in the URL. +
+E.g. splitthebill://login?token=userAccountToken
+
+==== Google sign-in
+Sample request
+include::{snippets}/auth/google-sign-in/http-request.adoc[]
+
+==== Facebook sign-in
+Sample request
+include::{snippets}/auth/facebook-sign-in/http-request.adoc[]
