@@ -60,4 +60,9 @@ public class Person extends RepresentationModel<Person> {
         this.userAccount = userAccount;
         this.name = name;
     }
+
+    public boolean isMemberOfGroup(Long groupId) {
+        return getPersonGroups().stream().anyMatch(x -> x.getGroup().getId().equals(groupId));
+    }
+
 }

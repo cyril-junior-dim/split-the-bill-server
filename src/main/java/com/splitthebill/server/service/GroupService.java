@@ -61,14 +61,14 @@ public class GroupService {
         groupExpense.setGroup(group);
         groupExpense.setTitle(expenseDto.title);
         PersonGroup creditor = personGroupRepository.findById(expenseDto.creditorId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Creditor has not been found"));
         groupExpense.setCreditor(creditor);
         BigDecimal amount = BigDecimal.valueOf(expenseDto.amount);
         groupExpense.setAmount(amount);
         LinkedList<PersonGroupExpense> debtors = new LinkedList<>();
         for (ExpenseParticipantCreateDto participant : expenseDto.debtors) {
             PersonGroup person = personGroupRepository.findById(participant.debtorId)
-                    .orElseThrow(EntityNotFoundException::new);
+                    .orElseThrow(() -> new EntityNotFoundException("Debtor has not been found"));
             PersonGroupExpense personExpense = new PersonGroupExpense(participant.splitRatio, person, groupExpense);
             debtors.add(personExpense);
         }
