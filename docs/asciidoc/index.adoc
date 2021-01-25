@@ -8,7 +8,7 @@
 
 == User account
 User account is a starting point of the app. Based on the user account, the token is generated
-which is then required to authenticate the user. Please note that this is the only endpoint
+which is then required to authenticate the user. Please note that `/auth/*` is the only endpoint path
 that can be accessed without the token. All other endpoints will not allow the user to interact with any data
 unless they provide the token.
 
@@ -48,6 +48,19 @@ include::{snippets}/auth/google-sign-in/http-request.adoc[]
 ==== Facebook sign-in
 Sample request
 include::{snippets}/auth/facebook-sign-in/http-request.adoc[]
+
+=== Get user account
+This endpoint is used to get data on user account (both basic and third-party type). +
+WARNING! This endpoint requires a token!
+
+Sample request
+include::{snippets}/user-account/get-user-account/http-request.adoc[]
+Sample response
+include::{snippets}/user-account/get-user-account/http-response.adoc[]
+Response fields
+include::{snippets}/user-account/get-user-account/response-fields.adoc[]
+Links description
+include::{snippets}/user-account/get-user-account/links.adoc[]
 
 == Person
 Person is used as an "overlay" to user account. It is more safe to make references
