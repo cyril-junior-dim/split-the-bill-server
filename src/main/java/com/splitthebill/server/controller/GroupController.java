@@ -44,6 +44,8 @@ public class GroupController {
                 throw new IllegalAccessException("Must be a member of the group.");
             Group createdGroup = groupService.getGroupById(id);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -58,6 +60,8 @@ public class GroupController {
                 throw new IllegalAccessException("Must be a member of the group.");
             groupService.addExpense(expenseDto);
             return ResponseEntity.ok().build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
