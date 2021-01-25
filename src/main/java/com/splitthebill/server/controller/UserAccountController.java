@@ -1,8 +1,8 @@
 package com.splitthebill.server.controller;
 
+import com.splitthebill.server.dto.UserAccountReadDto;
 import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.security.JwtUtils;
-import com.splitthebill.server.service.BasicUserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
@@ -23,9 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserAccountController {
 
     @NonNull
-    BasicUserAccountService basicUserAccountService;
-
-    @NonNull
     JwtUtils jwtUtils;
 
     @GetMapping
@@ -34,11 +31,12 @@ public class UserAccountController {
         return ResponseEntity.ok(assembleLinks(authentication, userAccount));
     }
 
-    private UserAccount assembleLinks(Authentication authentication, UserAccount userAccount){
+    private UserAccountReadDto assembleLinks(Authentication authentication, UserAccount userAccount) {
+        UserAccountReadDto userAccountReadDto = new UserAccountReadDto(userAccount.getEmail());
         Link self = linkTo(methodOn(UserAccountController.class).getUserAccount(authentication)).withSelfRel();
         Link person = linkTo(methodOn(PersonController.class).getPerson(authentication)).withRel("person");
         //TODO missing links - notifications
 
-        return userAccount.add(List.of(self, person));
+        return userAccountReadDto.add(List.of(self, person));
     }
 }
