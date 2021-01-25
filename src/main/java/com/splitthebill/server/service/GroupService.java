@@ -78,7 +78,7 @@ public class GroupService {
         for (ExpenseParticipantCreateDto participant : expenseDto.debtors) {
             PersonGroup person = personGroupRepository.findById(participant.debtorId)
                     .orElseThrow(() -> new EntityNotFoundException("Debtor has not been found"));
-            PersonGroupExpense personExpense = new PersonGroupExpense(participant.splitRatio, person, groupExpense);
+            PersonGroupExpense personExpense = new PersonGroupExpense(participant.weight, person, groupExpense);
             debtors.add(personExpense);
         }
         groupExpense.setPersonGroupExpenses(debtors);

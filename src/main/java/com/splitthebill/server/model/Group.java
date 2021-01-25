@@ -38,8 +38,10 @@ public class Group {
         BigDecimal amount = expense.getAmount();
         Currency currency = expense.getCurrency();
         expense.getCreditor().addToBalance(currency, amount);
+        int totalWeight = expense.getTotalWeight();
         for (PersonGroupExpense personGroupExpense : expense.getPersonGroupExpenses()) {
-            BigDecimal toSubtract = amount.multiply(personGroupExpense.getSplitRatio());
+            BigDecimal splitRatio = BigDecimal.valueOf(personGroupExpense.getWeight()).divide(BigDecimal.valueOf(totalWeight));
+            BigDecimal toSubtract = amount.multiply(splitRatio);
             personGroupExpense.getDebtor().subtractFromBalance(currency, toSubtract);
         }
     }

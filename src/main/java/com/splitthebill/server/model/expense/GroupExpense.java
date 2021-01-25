@@ -27,4 +27,11 @@ public class GroupExpense extends Expense {
 
     @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
     private List<PersonGroupExpense> personGroupExpenses;
+
+    public int getTotalWeight() {
+        return personGroupExpenses.stream()
+                .map(PersonGroupExpense::getWeight)
+                .reduce(0, Integer::sum);
+    }
+
 }
