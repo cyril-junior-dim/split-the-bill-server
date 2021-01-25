@@ -40,22 +40,18 @@ public class PersonGroup {
         this.balances.put(person.getPreferredCurrency(), BigDecimal.ZERO);
     }
 
-    public void addToBalance(Currency currency, BigDecimal amount){
-        if(balances.containsKey(currency)){
+    public void addToBalance(Currency currency, BigDecimal amount) {
+        if (balances.containsKey(currency)) {
             BigDecimal newBalance = balances.computeIfPresent(currency, (c, currBalance) -> currBalance.add(amount));
-            if(newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency()))
+            if (newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency())) {
+                System.out.println("Currency not preferred");
                 balances.remove(currency);
-        }else
-            balances.put(currency, amount);
+            }
+        } else balances.put(currency, amount);
     }
 
-    public void subtractFromBalance(Currency currency, BigDecimal amount){
-        if(balances.containsKey(currency)){
-            BigDecimal newBalance = balances.computeIfPresent(currency, (c, currBalance) -> currBalance.subtract(amount));
-            if(newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency()))
-                balances.remove(currency);
-        }else
-            balances.put(currency, amount);
+    public void subtractFromBalance(Currency currency, BigDecimal amount) {
+        addToBalance(currency, amount.negate());
     }
 
 }
