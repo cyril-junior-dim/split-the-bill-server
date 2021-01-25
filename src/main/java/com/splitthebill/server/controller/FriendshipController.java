@@ -4,15 +4,13 @@ import com.splitthebill.server.dto.friendship.FriendshipCollectionReadDto;
 import com.splitthebill.server.dto.friendship.FriendshipCreateDto;
 import com.splitthebill.server.dto.friendship.FriendshipReadDto;
 import com.splitthebill.server.model.user.Friendship;
-import com.splitthebill.server.model.user.UserAccount;
+import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.service.FriendshipService;
 import com.splitthebill.server.service.UserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,35 +20,37 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/friendships")
 public class FriendshipController {
 
     @NonNull
-    JwtUtils jwtUtils;
-    @NonNull
     private final FriendshipService friendshipService;
     @NonNull
     private final UserAccountService userAccountService;
+    @NonNull
+    JwtUtils jwtUtils;
 
     @GetMapping
     public ResponseEntity<?> getAllFriendships(Authentication authentication) {
-        UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
+        Person person;
+        try {
+            person = jwtUtils.getPersonFromAuthentication(authentication);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         List<FriendshipReadDto> confirmedFriendships =
-                friendshipService.getAllConfirmedFriendshipsForPerson(userAccount.getPerson()).stream()
-                        .map(friendship -> assembleConfirmedFriendshipLinks(authentication, friendship))
+                friendshipService.getAllConfirmedFriendshipsForPerson(person).stream()
+                        .map(this::assembleDto)
                         .collect(Collectors.toList());
         List<FriendshipReadDto> pendingFriendships =
-                friendshipService.getAllPendingFriendshipForPerson(userAccount.getPerson()).stream()
-                        .map(friendship -> assemblePendingFriendshipLinks(authentication, friendship))
+                friendshipService.getAllPendingFriendshipForPerson(person).stream()
+                        .map(this::assembleDto)
                         .collect(Collectors.toList());
         List<FriendshipReadDto> receivedRequests =
-                friendshipService.getAllFriendshipRequestsForPerson(userAccount.getPerson()).stream()
-                        .map(friendship -> assembleReceivedFriendshipRequestLinks(authentication, friendship))
+                friendshipService.getAllFriendshipRequestsForPerson(person).stream()
+                        .map(this::assembleDto)
                         .collect(Collectors.toList());
         FriendshipCollectionReadDto collectionReadDto = new FriendshipCollectionReadDto();
         collectionReadDto.friendships.put("confirmed", confirmedFriendships);
@@ -63,13 +63,15 @@ public class FriendshipController {
     public ResponseEntity<?> sendFriendshipRequest(@RequestBody FriendshipCreateDto friendshipCreateDto,
                                                    Authentication authentication) {
         try {
-            UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
-            UserAccount targetUserAccount = userAccountService
-                    .getUserAccountByIdentifierAttribute(friendshipCreateDto.identifierAttribute);
+            Person requestingPerson = jwtUtils.getPersonFromAuthentication(authentication);
+            Person targetPerson = userAccountService
+                    .getUserAccountByIdentifierAttribute(friendshipCreateDto.identifierAttribute).getPerson();
+            if (targetPerson == null)
+                throw new EntityNotFoundException();
 
             Friendship requestedFriendship =
-                    friendshipService.sendFriendshipRequest(userAccount.getPerson(), targetUserAccount.getPerson());
-            return ResponseEntity.ok(assemblePendingFriendshipLinks(authentication, requestedFriendship));
+                    friendshipService.sendFriendshipRequest(requestingPerson, targetPerson);
+            return ResponseEntity.ok(assembleDto(requestedFriendship));
         } catch (EntityNotFoundException entityNotFoundException) {
             return ResponseEntity.notFound().build();
         } catch (DataIntegrityViolationException | EntityExistsException exception) {
@@ -77,55 +79,39 @@ public class FriendshipController {
         }
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/accept")
     public ResponseEntity<?> acceptFriendshipRequest(@PathVariable Long id, Authentication authentication) {
-        UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
-        Friendship friendshipToConfirm = friendshipService.getFriendshipById(id);
-        if (friendshipToConfirm.getPerson1().equals(userAccount.getPerson()) && !friendshipToConfirm.isConfirmed()) {
-            friendshipToConfirm = friendshipService.acceptFriendshipRequest(id);
-            return ResponseEntity.ok(assembleConfirmedFriendshipLinks(authentication, friendshipToConfirm));
+        Person requestIssuer;
+        try {
+            requestIssuer = jwtUtils.getPersonFromAuthentication(authentication);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        Friendship friendshipToConfirm = friendshipService.getFriendshipById(id);
+        if (friendshipToConfirm.getPerson1().equals(requestIssuer) && !friendshipToConfirm.isConfirmed()) {
+            friendshipToConfirm = friendshipService.acceptFriendshipRequest(id);
+            return ResponseEntity.ok(assembleDto(friendshipToConfirm));
+        }
+        return ResponseEntity.badRequest().body("Must be a receiver of a friendship request.");
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/break")
     public ResponseEntity<?> breakFriendship(@PathVariable Long id, Authentication authentication) {
-        UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
+        Person requestIssuer;
+        try {
+            requestIssuer = jwtUtils.getPersonFromAuthentication(authentication);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         Friendship friendshipToConfirm = friendshipService.getFriendshipById(id);
-        if (userAccount.getPerson().equals(friendshipToConfirm.getPerson1())) {
+        if (requestIssuer.equals(friendshipToConfirm.getPerson1())) {
             friendshipService.breakFriendship(id);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.badRequest().body("Must be an initiator of a friendship.");
     }
 
-    private FriendshipReadDto assembleConfirmedFriendshipLinks(Authentication authentication,
-                                                               Friendship friendship) {
-        FriendshipReadDto friendshipReadDto = new FriendshipReadDto(friendship.getPerson2().getName());
-        Link breakFriendshipLink =
-                linkTo(methodOn(FriendshipController.class).breakFriendship(friendship.getId(), authentication))
-                        .withRel("breakFriendship");
-        return friendshipReadDto.add(breakFriendshipLink);
-    }
-
-    private FriendshipReadDto assemblePendingFriendshipLinks(Authentication authentication,
-                                                             Friendship friendship) {
-        FriendshipReadDto friendshipReadDto = new FriendshipReadDto(friendship.getPerson2().getName());
-        Link breakFriendshipLink =
-                linkTo(methodOn(FriendshipController.class).breakFriendship(friendship.getId(), authentication))
-                        .withRel("breakFriendship");
-        return friendshipReadDto.add(breakFriendshipLink);
-    }
-
-    private FriendshipReadDto assembleReceivedFriendshipRequestLinks(Authentication authentication,
-                                                                     Friendship friendship) {
-        FriendshipReadDto friendshipReadDto = new FriendshipReadDto(friendship.getPerson2().getName());
-        Link breakFriendshipLink =
-                linkTo(methodOn(FriendshipController.class).breakFriendship(friendship.getId(), authentication))
-                        .withRel("breakFriendship");
-        Link acceptFriendshipLink =
-                linkTo(methodOn(FriendshipController.class).acceptFriendshipRequest(friendship.getId(), authentication))
-                        .withRel("acceptFriendshipRequest");
-        return friendshipReadDto.add(List.of(breakFriendshipLink, acceptFriendshipLink));
+    private FriendshipReadDto assembleDto(Friendship friendship) {
+        return new FriendshipReadDto(friendship.getId(), friendship.getPerson2().getName());
     }
 }

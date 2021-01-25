@@ -2,10 +2,7 @@ package com.splitthebill.server.model.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +13,10 @@ import java.util.Objects;
 
 @Entity
 @Data
+@Builder
 @RequiredArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Friendship {
 
     @Id
