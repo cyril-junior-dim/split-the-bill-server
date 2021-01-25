@@ -1,33 +1,32 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.config.WebSecurityConfig;
 import com.splitthebill.server.dto.BasicUserAccountCreateDto;
 import com.splitthebill.server.model.user.BasicUserAccount;
-import com.splitthebill.server.security.AuthEntryPointJwt;
 import com.splitthebill.server.security.JwtUtils;
-import com.splitthebill.server.security.Oauth2AuthenticationSuccessHandler;
-import com.splitthebill.server.security.UserDetailsServiceImpl;
 import com.splitthebill.server.service.BasicUserAccountService;
 import com.splitthebill.server.service.ThirdPartyUserAccountService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,15 +35,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         uriScheme = "https",
         uriHost = "softstone.pl",
         uriPort = 8443)
-@WebMvcTest(controllers = AuthController.class)
-@Import({WebSecurityConfig.class,
-        UserDetailsServiceImpl.class,
-        AuthEntryPointJwt.class,
-        Oauth2AuthenticationSuccessHandler.class})
+@SpringBootTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@AutoConfigureMockMvc
 public class AuthControllerTest {
 
-    @MockBean
-    RedirectStrategy redirectStrategy;
     @MockBean
     AuthenticationManager authenticationManager;
     @MockBean
@@ -60,6 +55,7 @@ public class AuthControllerTest {
     MockMvc mockMvc;
 
     @Test
+    @WithMockUser
     public void testAuthenticateUser() throws Exception {
         String postDto = "{" +
                 "\"username\": \"username\"," +
@@ -89,6 +85,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testRegisterUser() throws Exception {
         String postDto = "{" +
                 "\"username\": \"username\"," +
