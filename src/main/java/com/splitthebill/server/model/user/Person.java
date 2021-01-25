@@ -7,9 +7,7 @@ import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.OwnExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
 import com.splitthebill.server.model.expense.scheduled.ScheduledPersonGroupExpense;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -17,9 +15,11 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@Builder
 public class Person extends RepresentationModel<Person> {
 
     @Id
