@@ -15,6 +15,7 @@ public class GroupExpenseReadDto {
     String title;
     List<Long> debtorMemberIds;
     BigDecimal amount;
+    String currency;
 
     public GroupExpenseReadDto(GroupExpense expense) {
         this.expenseId = expense.getId();
@@ -24,5 +25,6 @@ public class GroupExpenseReadDto {
                 .map(participant -> participant.getDebtor().getId())
                 .collect(Collectors.toList());
         this.amount = expense.getAmount();
+        this.currency = expense.getCurrency().getAbbreviation();
     }
 }
