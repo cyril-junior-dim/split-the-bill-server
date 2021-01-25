@@ -88,3 +88,53 @@ Response fields
 include::{snippets}/person/update-person/response-fields.adoc[]
 Links description
 include::{snippets}/person/update-person/links.adoc[]
+
+
+== Friendship
+Friendship is designed a two directional relationship between two people.
+Therefore, if `Person One` requests friendship to `Person Two`
+then the relation of `Person Two` to `Person One` is also created. +
+
+.Friendship types
+* Pending Friendship (`Person One` sent request to `Person Two` but it has not been accepted yet)
+* Received Friendship Request (Same as above but from `Person Two` perspective)
+* Confirmed Friendship (Both people have confirmed friendship.)
+
+=== Get all friendships
+Sample request
+include::{snippets}/friendship/get-all-friendships/http-request.adoc[]
+Sample response
+include::{snippets}/friendship/get-all-friendships/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/get-all-friendships/response-fields-beneath-friendships.adoc[]
+
+=== Send friendship request
+Sample request
+include::{snippets}/friendship/send-friendship-request/http-request.adoc[]
+Request fields
+include::{snippets}/friendship/send-friendship-request/request-fields.adoc[]
+Sample response +
+NOTE! Returns pending friendship.
+include::{snippets}/friendship/send-friendship-request/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/send-friendship-request/response-fields.adoc[]
+
+=== Accept friendship request
+Sample request
+include::{snippets}/friendship/accept-friendship-request/http-request.adoc[]
+Path parameters +
+include::{snippets}/friendship/accept-friendship-request/path-parameters.adoc[]
+Sample response +
+NOTE! Returns confirmed friendship.
+include::{snippets}/friendship/accept-friendship-request/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/accept-friendship-request/response-fields.adoc[]
+
+
+=== Break friendship
+Sample request
+include::{snippets}/friendship/break-friendship-request/http-request.adoc[]
+Path parameters +
+include::{snippets}/friendship/break-friendship-request/path-parameters.adoc[]
+Sample response
+include::{snippets}/friendship/break-friendship-request/http-response.adoc[]
