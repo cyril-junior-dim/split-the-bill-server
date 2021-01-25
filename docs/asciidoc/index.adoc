@@ -7,9 +7,14 @@
 :sectlinks:
 
 == User account
+User account is a starting point of the app. Based on the user account, the token is generated
+which is then required to authenticate the user. Please note that this is the only endpoint
+that can be accessed without the token. All other endpoints will not allow the user to interact with any data
+unless they provide the token.
 
 === Basic user account
-Basic user account requires a user to provide a username, password and email. Username and email has to be UNIQUE.
+Basic user account requires a user to provide a username, password and email. Username and email have to be UNIQUE. +
+NOTE! After creating a basic user account it is necessary to create a `Person`.
 
 ==== Basic user account signup
 Sample request
@@ -43,3 +48,43 @@ include::{snippets}/auth/google-sign-in/http-request.adoc[]
 ==== Facebook sign-in
 Sample request
 include::{snippets}/auth/facebook-sign-in/http-request.adoc[]
+
+== Person
+Person is used as an "overlay" to user account. It is more safe to make references
+to the object not involved in storing credentials.
+
+=== Get person
+Sample request
+include::{snippets}/person/get-person/http-request.adoc[]
+Sample response
+include::{snippets}/person/get-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/get-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/get-person/links.adoc[]
+
+=== Create person
+Sample request
+include::{snippets}/person/create-person/http-request.adoc[]
+Request fields
+include::{snippets}/person/create-person/request-fields.adoc[]
+Sample response
+include::{snippets}/person/create-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/create-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/create-person/links.adoc[]
+
+=== Update person
+It is possible to change the name or/and preferred currency of a person. +
+
+Sample request
+include::{snippets}/person/update-person/http-request.adoc[]
+Request fields
+include::{snippets}/person/update-person/request-fields.adoc[]
+Sample response
+include::{snippets}/person/update-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/update-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/update-person/links.adoc[]
