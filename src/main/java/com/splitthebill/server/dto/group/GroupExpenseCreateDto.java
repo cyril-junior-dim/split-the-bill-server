@@ -9,9 +9,6 @@ import java.util.List;
 
 public class GroupExpenseCreateDto {
 
-    @Min(1)
-    public Long groupId;
-
     @NotBlank
     public String title;
 

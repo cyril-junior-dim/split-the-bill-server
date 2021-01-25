@@ -42,4 +42,9 @@ public class Group {
             personGroupExpense.getDebtor().subtractFromBalance(currency, toSubtract);
         }
     }
+
+    public void addMember(PersonGroup member) {
+        members.add(member);
+    }
+    
 }

@@ -25,7 +25,8 @@ public class PersonService {
     private final CurrencyRepository currencyRepository;
 
     public Person getPersonById(Long id) throws EntityNotFoundException {
-        return personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return personRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Person has not been found."));
     }
 
     public Person createPerson(UserAccount userAccount, PersonCreateDto personCreateDto) throws EntityNotFoundException {
