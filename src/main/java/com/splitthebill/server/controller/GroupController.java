@@ -32,12 +32,12 @@ public class GroupController {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public ResponseEntity<?> getUserGroups(Authentication authentication){
+    public ResponseEntity<?> getUserGroups(Authentication authentication) {
         try {
             Person person = jwtUtils.getUserAccountFromAuthentication(authentication).getPerson();
             return ResponseEntity.ok(person.getPersonGroups().stream()
                     .map(PersonGroupReadDto::new));
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -54,27 +54,42 @@ public class GroupController {
         }
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getGroupById(@PathVariable Long id, Authentication authentication) {
+    @GetMapping(path = "/{groupId}")
+    public ResponseEntity<?> getGroupById(@PathVariable Long groupId, Authentication authentication) {
         try {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
-            if (!person.isMemberOfGroup(id))
+            if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
-            Group createdGroup = groupService.getGroupById(id);
+            Group createdGroup = groupService.getGroupById(groupId);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
         } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping(path = "/expenses")
-    public ResponseEntity<?> createExpense(@Valid @RequestBody GroupExpenseCreateDto expenseDto,
+    @PatchMapping(path = "/{groupId}/add")
+    public ResponseEntity<?> addGroupMember(@PathVariable Long groupId, @RequestParam Long personId,
+                                            Authentication authentication) {
+        try {
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
+            if (!person.isMemberOfGroup(groupId))
+                throw new IllegalAccessException("Must be a member of the group.");
+            groupService.addGroupMember(groupId, personId);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException | IllegalAccessException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "/{groupId}/expenses")
+    public ResponseEntity<?> createExpense(@PathVariable Long groupId,
+                                           @Valid @RequestBody GroupExpenseCreateDto expenseDto,
                                            Authentication authentication) {
         try {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
-            if (!person.isMemberOfGroup(expenseDto.groupId))
+            if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
-            groupService.addExpense(expenseDto);
+            groupService.addExpense(groupId, expenseDto);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -57,12 +57,13 @@ public class GroupService {
     }
 
     public Group getGroupById(Long id) throws EntityNotFoundException {
-        return groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Group has not been found."));
     }
 
-    public void addExpense(GroupExpenseCreateDto expenseDto) throws EntityNotFoundException {
+    public void addExpense(Long groupId, GroupExpenseCreateDto expenseDto) throws EntityNotFoundException {
         GroupExpense groupExpense = new GroupExpense();
-        Group group = getGroupById(expenseDto.groupId);
+        Group group = getGroupById(groupId);
         Currency currency = currencyRepository.findCurrencyByAbbreviation(expenseDto.currencyAbbreviation)
                 .orElseThrow(EntityNotFoundException::new);
         groupExpense.setGroup(group);
@@ -85,4 +86,12 @@ public class GroupService {
         groupExpenseRepository.save(groupExpense);
     }
 
+    public void addGroupMember(Long groupId, Long personId) {
+        Group group = this.getGroupById(groupId);
+        Person person = personService.getPersonById(personId);
+        PersonGroup member = new PersonGroup(person, group);
+        personGroupRepository.save(member);
+        group.addMember(member);
+        groupRepository.save(group);
+    }
 }
