@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 @RestController
@@ -31,7 +32,7 @@ public class GroupController {
         try {
             Group createdGroup = groupService.createGroup(group);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -39,14 +40,12 @@ public class GroupController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getGroupById(@PathVariable Long id, Authentication authentication) {
         try {
-            Person person = jwtUtils.getUserAccountFromAuthentication(authentication).getPerson();
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(id))
                 throw new IllegalAccessException("Must be a member of the group.");
             Group createdGroup = groupService.getGroupById(id);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
-        } catch (NullPointerException e) {
-            return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -55,14 +54,12 @@ public class GroupController {
     public ResponseEntity<?> createExpense(@Valid @RequestBody GroupExpenseCreateDto expenseDto,
                                            Authentication authentication) {
         try {
-            Person person = jwtUtils.getUserAccountFromAuthentication(authentication).getPerson();
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(expenseDto.groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
             groupService.addExpense(expenseDto);
             return ResponseEntity.ok().build();
-        } catch (NullPointerException e) {
-            return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

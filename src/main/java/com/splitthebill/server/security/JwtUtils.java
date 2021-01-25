@@ -1,5 +1,6 @@
 package com.splitthebill.server.security;
 
+import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.UserAccount;
 import io.jsonwebtoken.*;
 import lombok.NonNull;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 
 @Component
@@ -16,10 +18,8 @@ public class JwtUtils {
 
     @Value("${splitthebill.app.jwtSecret}")
     private String jwtSecret;
-
     @Value("${splitthebill.app.jwtExpirationMs}")
     private int jwtExpirationMs;
-
     @NonNull
     private UserDetailsServiceImpl userDetailsService;
 
@@ -42,9 +42,16 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public UserAccount getUserAccountFromAuthentication(Authentication authentication){
+    public UserAccount getUserAccountFromAuthentication(Authentication authentication) {
         UserDetailsImpl userAccount = (UserDetailsImpl) authentication.getPrincipal();
         return userDetailsService.loadUserAccountByUsername(userAccount.getUsername());
+    }
+
+    public Person getPersonFromAuthentication(Authentication authentication) {
+        Person person = getUserAccountFromAuthentication(authentication).getPerson();
+        if(person == null)
+            throw new EntityNotFoundException("User account has no person assigned.");
+        return person;
     }
 
     public boolean validateJwtToken(String authToken) {

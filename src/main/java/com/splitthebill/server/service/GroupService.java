@@ -56,11 +56,11 @@ public class GroupService {
         return group;
     }
 
-    public Group getGroupById(Long id) throws Exception {
+    public Group getGroupById(Long id) throws EntityNotFoundException {
         return groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public void addExpense(GroupExpenseCreateDto expenseDto) throws Exception {
+    public void addExpense(GroupExpenseCreateDto expenseDto) throws EntityNotFoundException {
         GroupExpense groupExpense = new GroupExpense();
         Group group = getGroupById(expenseDto.groupId);
         Currency currency = currencyRepository.findCurrencyByAbbreviation(expenseDto.currencyAbbreviation)
