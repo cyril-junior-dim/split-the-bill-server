@@ -770,7 +770,7 @@ Pragma: no-cache
 Expires: 0
 Strict-Transport-Security: max-age=31536000 ; includeSubDomains
 X-Frame-Options: DENY
-Content-Length: 212
+Content-Length: 303
 
 {
   "email" : "test@test.com",
@@ -780,6 +780,9 @@ Content-Length: 212
     },
     "person" : {
       "href" : "https://softstone.pl:8443/people"
+    },
+    "notifications" : {
+      "href" : "https://softstone.pl:8443/notifications"
     }
   }
 }</code></pre>
@@ -831,6 +834,10 @@ Content-Length: 212
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>person</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Link to person assigned to user account.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>notifications</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Link to notifications assigned to user account.</p></td>
 </tr>
 </tbody>
 </table>
