@@ -35,8 +35,10 @@ public class UserAccountController {
         UserAccountReadDto userAccountReadDto = new UserAccountReadDto(userAccount.getEmail());
         Link self = linkTo(methodOn(UserAccountController.class).getUserAccount(authentication)).withSelfRel();
         Link person = linkTo(methodOn(PersonController.class).getPerson(authentication)).withRel("person");
+        Link notifications = linkTo(methodOn(NotificationController.class).getAllNotifications(authentication))
+                .withRel("notifications");
         //TODO missing links - notifications
 
-        return userAccountReadDto.add(List.of(self, person));
+        return userAccountReadDto.add(List.of(self, person, notifications));
     }
 }

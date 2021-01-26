@@ -69,7 +69,9 @@ public class UserAccountControllerTest {
                                 linkWithRel("self")
                                         .description("Self reference"),
                                 linkWithRel("person")
-                                        .description("Link to person assigned to user account.")
+                                        .description("Link to person assigned to user account."),
+                                linkWithRel("notifications")
+                                        .description("Link to notifications assigned to user account.")
                         )
                 ));
     }

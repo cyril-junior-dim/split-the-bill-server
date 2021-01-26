@@ -79,7 +79,7 @@ public class FriendshipController {
         }
     }
 
-    @PostMapping("/{id}/accept")
+    @PatchMapping("/{id}/accept")
     public ResponseEntity<?> acceptFriendshipRequest(@PathVariable Long id, Authentication authentication) {
         Person requestIssuer;
         try {
