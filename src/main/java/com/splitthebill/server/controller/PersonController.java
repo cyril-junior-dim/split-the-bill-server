@@ -12,6 +12,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -42,16 +43,17 @@ public class PersonController {
 
     @PostMapping
     public ResponseEntity<?> createPerson(@RequestBody PersonCreateDto personCreateDto, Authentication authentication) {
-        UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
-        Person createdPerson;
         try {
-            createdPerson = personService.createPerson(userAccount, personCreateDto);
-        }catch (EntityNotFoundException e){
+            UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
+            if (userAccount.getPerson() != null)
+                throw new IllegalAccessException("There's already a person assigned.");
+            Person createdPerson = personService.createPerson(userAccount, personCreateDto);
+            PersonReadDto linkedPerson = assembleLinks(authentication, createdPerson);
+            return ResponseEntity.created(linkedPerson.getLink("self").get().toUri())
+                    .body(linkedPerson);
+        } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        PersonReadDto linkedPerson = assembleLinks(authentication, createdPerson);
-        return ResponseEntity.created(linkedPerson.getLink("self").get().toUri())
-                .body(linkedPerson);
     }
 
     @PatchMapping
@@ -60,7 +62,7 @@ public class PersonController {
             Person existingPerson = jwtUtils.getPersonFromAuthentication(authentication);
             Person updatedPerson = personService.updatePerson(existingPerson, personCreateDto);
             return ResponseEntity.ok(assembleLinks(authentication, updatedPerson));
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
