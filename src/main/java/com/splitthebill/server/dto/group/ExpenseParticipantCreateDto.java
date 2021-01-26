@@ -10,6 +10,6 @@ public class ExpenseParticipantCreateDto {
 
     @Min(1)
     @Max(10)
-    public int weight;
+    public int weight = 1;
 
 }

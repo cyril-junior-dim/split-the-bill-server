@@ -88,7 +88,7 @@ public class GroupController {
                 throw new IllegalAccessException("Must be a member of the group.");
             groupService.addExpense(groupId, expenseDto);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | IllegalAccessException e) {
+        } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

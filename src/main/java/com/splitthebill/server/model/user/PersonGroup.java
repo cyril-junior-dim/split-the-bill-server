@@ -44,7 +44,6 @@ public class PersonGroup {
         if (balances.containsKey(currency)) {
             BigDecimal newBalance = balances.computeIfPresent(currency, (c, currBalance) -> currBalance.add(amount));
             if (newBalance.equals(BigDecimal.ZERO) && !currency.equals(person.getPreferredCurrency())) {
-                System.out.println("Currency not preferred");
                 balances.remove(currency);
             }
         } else balances.put(currency, amount);
