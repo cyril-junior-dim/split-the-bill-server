@@ -6,7 +6,6 @@ import com.splitthebill.server.dto.group.GroupReadDto;
 import com.splitthebill.server.dto.group.PersonGroupReadDto;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.user.Person;
-import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.service.GroupService;
 import lombok.NonNull;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.LinkedList;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -91,7 +88,7 @@ public class GroupController {
                 throw new IllegalAccessException("Must be a member of the group.");
             groupService.addExpense(groupId, expenseDto);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | IllegalAccessException e) {
+        } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

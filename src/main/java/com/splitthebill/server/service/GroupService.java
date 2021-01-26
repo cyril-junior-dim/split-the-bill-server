@@ -71,14 +71,18 @@ public class GroupService {
         groupExpense.setCurrency(currency);
         PersonGroup creditor = personGroupRepository.findById(expenseDto.creditorId)
                 .orElseThrow(() -> new EntityNotFoundException("Creditor has not been found"));
+        if (!personGroupRepository.existsByIdAndGroup(expenseDto.creditorId, group))
+            throw new IllegalArgumentException("Creditor doesn't belong to the group.");
         groupExpense.setCreditor(creditor);
         BigDecimal amount = BigDecimal.valueOf(expenseDto.amount);
         groupExpense.setAmount(amount);
         LinkedList<PersonGroupExpense> debtors = new LinkedList<>();
         for (ExpenseParticipantCreateDto participant : expenseDto.debtors) {
+            if (!personGroupRepository.existsByIdAndGroup(participant.debtorId, group))
+                throw new IllegalArgumentException("One of the debtors doesn't belong to the group.");
             PersonGroup person = personGroupRepository.findById(participant.debtorId)
                     .orElseThrow(() -> new EntityNotFoundException("Debtor has not been found"));
-            PersonGroupExpense personExpense = new PersonGroupExpense(participant.splitRatio, person, groupExpense);
+            PersonGroupExpense personExpense = new PersonGroupExpense(participant.weight, person, groupExpense);
             debtors.add(personExpense);
         }
         groupExpense.setPersonGroupExpenses(debtors);

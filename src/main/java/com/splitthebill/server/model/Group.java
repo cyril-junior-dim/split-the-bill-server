@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,11 @@ public class Group {
         BigDecimal amount = expense.getAmount();
         Currency currency = expense.getCurrency();
         expense.getCreditor().addToBalance(currency, amount);
+        int totalWeight = expense.getTotalWeight();
         for (PersonGroupExpense personGroupExpense : expense.getPersonGroupExpenses()) {
-            BigDecimal toSubtract = amount.multiply(personGroupExpense.getSplitRatio());
+            BigDecimal splitRatio = BigDecimal.valueOf(personGroupExpense.getWeight())
+                    .divide(BigDecimal.valueOf(totalWeight), 2, RoundingMode.HALF_UP);
+            BigDecimal toSubtract = amount.multiply(splitRatio);
             personGroupExpense.getDebtor().subtractFromBalance(currency, toSubtract);
         }
     }
