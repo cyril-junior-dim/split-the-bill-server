@@ -7,7 +7,7 @@ public class NotificationReadDto {
 
     public Long id;
     public String title;
-    public String content;
+    public String description;
     public boolean isReviewed;
 
 }

@@ -151,3 +151,30 @@ Path parameters +
 include::{snippets}/friendship/break-friendship-request/path-parameters.adoc[]
 Sample response
 include::{snippets}/friendship/break-friendship-request/http-response.adoc[]
+
+
+== Notification
+Notifications are simple text messages with titles. Each user is capable of receiving the notifications
+as well as sending some. Examples given below.
+
+=== Get all notifications
+Sample request
+include::{snippets}/notification/get-all-notifications/http-request.adoc[]
+Sample response +
+include::{snippets}/notification/get-all-notifications/http-response.adoc[]
+Response fields
+include::{snippets}/notification/get-all-notifications/response-fields.adoc[]
+
+=== Mark notification reviewed
+When user reads a notification, the following should be issued.
+Sample request
+include::{snippets}/notification/mark-notification-reviewed/http-request.adoc[]
+Path parameters +
+include::{snippets}/notification/mark-notification-reviewed/path-parameters.adoc[]
+Sample response +
+include::{snippets}/notification/mark-notification-reviewed/http-response.adoc[]
+Response fields
+include::{snippets}/notification/mark-notification-reviewed/response-fields.adoc[]
+
+=== Send pending debt reminder
+To be implemented

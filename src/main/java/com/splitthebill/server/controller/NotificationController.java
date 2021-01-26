@@ -41,7 +41,7 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    @PostMapping("/{id}/markReviewed")
+    @PatchMapping("/{id}/markReviewed")
     public ResponseEntity<?> markNotificationReviewed(@PathVariable Long id, Authentication authentication){
         try{
             UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
