@@ -191,7 +191,7 @@ public class FriendshipControllerTest {
                 }
         );
 
-        mockMvc.perform(post("/friendships/{id}/accept", 2))
+        mockMvc.perform(patch("/friendships/{id}/accept", 2))
                 .andExpect(status().isOk())
                 .andDo(document("accept-friendship-request",
                         preprocessRequest(prettyPrint()),
