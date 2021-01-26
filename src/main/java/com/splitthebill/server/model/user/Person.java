@@ -68,4 +68,8 @@ public class Person extends RepresentationModel<Person> {
         return getPersonGroups().stream().anyMatch(x -> x.getGroup().getId().equals(groupId));
     }
 
+    public void addOwnExpense(OwnExpense ownExpense){
+        ownExpenses.add(ownExpense);
+    }
+
 }
