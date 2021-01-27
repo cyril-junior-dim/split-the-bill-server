@@ -333,7 +333,7 @@ public class GroupControllerTest {
 
         String postBody = "{" +
                 "\"title\": \"Domino's Pizza\"," +
-                "\"creditorId\": \"1\"," +
+                "\"creditorId\": 1," +
                 "\"debtors\": [" +
                 "{" +
                 "\"debtorId\": 1," +
