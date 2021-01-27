@@ -178,3 +178,68 @@ include::{snippets}/notification/mark-notification-reviewed/response-fields.adoc
 
 === Send pending debt reminder
 To be implemented
+
+
+== Group
+A group is formed by at least two people. This is a base for creating shared expenses.
+
+=== Get all user groups
+Sample request
+include::{snippets}/groups/get-all-user-groups/http-request.adoc[]
+Sample response
+include::{snippets}/groups/get-all-user-groups/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-all-user-groups/response-fields.adoc[]
+
+=== Get group by id
+Sample request
+include::{snippets}/groups/get-group-by-id/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/get-group-by-id/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/get-group-by-id/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-group-by-id/response-fields.adoc[]
+
+=== Create group
+Sample request
+include::{snippets}/groups/create-group/http-request.adoc[]
+Request fields
+include::{snippets}/groups/create-group/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/create-group/http-response.adoc[]
+Response fields
+include::{snippets}/groups/create-group/response-fields.adoc[]
+
+=== Add group member
+Sample request
+include::{snippets}/groups/add-group-member/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/add-group-member/path-parameters.adoc[]
+Request parameters
+include::{snippets}/groups/add-group-member/request-parameters.adoc[]
+Sample response
+include::{snippets}/groups/add-group-member/http-response.adoc[]
+
+=== Create group expense
+Sample request
+include::{snippets}/groups/create-group-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/create-group-expense/path-parameters.adoc[]
+Request fields
+include::{snippets}/groups/create-group-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/create-group-expense/http-response.adoc[]
+
+=== Get settle up expenses
+When a user has pending debts in a group, they may want to settle up.
+This endpoint returns expenses that are to be performed in order to settle up user's balance. +
+
+Sample request
+include::{snippets}/groups/get-group-settle-up-expenses/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/get-group-settle-up-expenses/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/get-group-settle-up-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-group-settle-up-expenses/response-fields.adoc[]

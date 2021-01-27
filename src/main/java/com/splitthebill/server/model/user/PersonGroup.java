@@ -83,9 +83,6 @@ public class PersonGroup {
                 .collect(Collectors.toCollection(Stack::new));
         List<GroupExpense> expenses = new ArrayList<>();
 
-        System.out.println(currency);
-        positiveBalanceMembers.forEach(p -> System.out.println(p.person.getName()));
-
         while(balance.compareTo(BigDecimal.ZERO) > 0) {
             PersonGroup receiver = positiveBalanceMembers.pop();
             BigDecimal amountDue = balance.min(receiver.getBalances().get(currency));

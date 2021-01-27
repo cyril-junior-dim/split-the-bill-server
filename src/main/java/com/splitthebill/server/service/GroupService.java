@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class GroupService {
         for (Long id : groupDto.membersIds) {
             Person person = personService.getPersonById(id);
             PersonGroup personGroup = new PersonGroup(person, group);
-            personGroupRepository.save(personGroup);
+            personGroup = personGroupRepository.save(personGroup);
             members.add(personGroup);
         }
         group.setMembers(members);
@@ -74,7 +76,7 @@ public class GroupService {
         if (!personGroupRepository.existsByIdAndGroup(expenseDto.creditorId, group))
             throw new IllegalArgumentException("Creditor doesn't belong to the group.");
         groupExpense.setCreditor(creditor);
-        BigDecimal amount = BigDecimal.valueOf(expenseDto.amount);
+        BigDecimal amount = expenseDto.amount;
         groupExpense.setAmount(amount);
         LinkedList<PersonGroupExpense> debtors = new LinkedList<>();
         for (ExpenseParticipantCreateDto participant : expenseDto.debtors) {

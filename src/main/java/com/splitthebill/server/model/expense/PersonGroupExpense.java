@@ -1,6 +1,8 @@
 package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.user.PersonGroup;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +12,10 @@ import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class PersonGroupExpense {
 
     @Id

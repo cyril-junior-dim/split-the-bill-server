@@ -2,16 +2,16 @@ package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.user.PersonGroup;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
 @Entity
 public class GroupExpense extends Expense {
 

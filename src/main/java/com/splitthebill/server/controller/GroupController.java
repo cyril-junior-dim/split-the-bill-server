@@ -1,11 +1,9 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.dto.group.GroupCreateDto;
-import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
-import com.splitthebill.server.dto.group.GroupReadDto;
-import com.splitthebill.server.dto.group.PersonGroupReadDto;
+import com.splitthebill.server.dto.group.*;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.user.Person;
+import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.service.GroupService;
 import lombok.NonNull;
@@ -31,11 +29,11 @@ public class GroupController {
     @GetMapping
     public ResponseEntity<?> getUserGroups(Authentication authentication) {
         try {
-            Person person = jwtUtils.getUserAccountFromAuthentication(authentication).getPerson();
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
             return ResponseEntity.ok(person.getPersonGroups().stream()
                     .map(PersonGroupReadDto::new));
-        } catch (NullPointerException e) {
-            return ResponseEntity.badRequest().body("There is no person for this account. Create one.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -93,4 +91,21 @@ public class GroupController {
         }
     }
 
+    @GetMapping(path = "/{groupId}/settleUpExpenses")
+    public ResponseEntity<?> getSettleUpExpenses(@PathVariable Long groupId,
+                                           Authentication authentication) {
+        try {
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
+            if (!person.isMemberOfGroup(groupId))
+                throw new IllegalAccessException("Must be a member of the group.");
+            PersonGroup membership = person.getPersonGroups()
+                    .stream()
+                    .filter(personGroup -> personGroup.getGroup().getId().equals(groupId))
+                    .findFirst()
+                    .get();
+            return ResponseEntity.ok(membership.getSettleUpExpenses().stream().map(GroupExpenseCreateDto::new));
+        } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

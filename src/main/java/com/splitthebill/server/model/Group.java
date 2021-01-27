@@ -3,7 +3,10 @@ package com.splitthebill.server.model;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
 import com.splitthebill.server.model.user.PersonGroup;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,6 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "`group`")
 public class Group {

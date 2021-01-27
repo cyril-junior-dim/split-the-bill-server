@@ -8,10 +8,12 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@Builder
 @EqualsAndHashCode
 @Entity
 @RequiredArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Currency {
 
     @Id
