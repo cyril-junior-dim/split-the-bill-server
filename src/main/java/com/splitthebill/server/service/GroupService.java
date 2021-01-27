@@ -7,8 +7,10 @@ import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
+import com.splitthebill.server.model.user.Notification;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
+import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.repository.CurrencyRepository;
 import com.splitthebill.server.repository.GroupExpenseRepository;
 import com.splitthebill.server.repository.GroupRepository;
@@ -19,9 +21,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,9 @@ public class GroupService {
 
     @NonNull
     private final CurrencyRepository currencyRepository;
+
+    @NonNull
+    private final NotificationService notificationService;
 
     public Group createGroup(GroupCreateDto groupDto) throws EntityNotFoundException {
         Group group = new Group();
@@ -100,4 +104,37 @@ public class GroupService {
         group.addMember(member);
         groupRepository.save(group);
     }
+
+    public void sendDebtNotification(Person issuer, Long groupId){
+        PersonGroup membership = personGroupRepository.findByPersonAndGroup_Id(issuer, groupId)
+                .orElseThrow(EntityNotFoundException::new);
+        StringBuilder owings = new StringBuilder();
+        List<UserAccount> notificationRecipients = new ArrayList<>();
+        boolean first = true;
+        for(Map.Entry<Currency, BigDecimal> balance : membership.getBalances().entrySet()){
+            if(balance.getValue().compareTo(BigDecimal.ZERO) > 0){
+                if(!first)
+                    owings.append(", ");
+                owings.append(balance.getValue()).append(" in ").append(balance.getKey().getAbbreviation());
+                first = false;
+                notificationRecipients.addAll(membership.getGroup().getMembers()
+                        .stream()
+                        .filter(personGroup -> personGroup.getBalances().containsKey(balance.getKey()))
+                        .filter(personGroup -> personGroup.getBalances().get(balance.getKey()).compareTo(BigDecimal.ZERO) < 0)
+                        .filter(personGroup -> !personGroup.equals(membership))
+                        .map(personGroup -> personGroup.getPerson().getUserAccount())
+                        .collect(Collectors.toList())
+                );
+            }
+        }
+        if(owings.length() == 0){
+            throw new IllegalStateException("Cannot request debt reminder when owed no money.");
+        }
+
+        notificationService.sendNotificationToUserAccounts("Debt reminder",
+                "You have pending debts in group " + membership.getGroup().getName() + ". "
+                + membership.getPerson().getName() + " is owed " + owings + " and wants to settle up!",
+                notificationRecipients);
+    }
+
 }

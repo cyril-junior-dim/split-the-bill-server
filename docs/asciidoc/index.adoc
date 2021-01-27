@@ -176,9 +176,6 @@ include::{snippets}/notification/mark-notification-reviewed/http-response.adoc[]
 Response fields
 include::{snippets}/notification/mark-notification-reviewed/response-fields.adoc[]
 
-=== Send pending debt reminder
-To be implemented
-
 
 == Group
 A group is formed by at least two people. This is a base for creating shared expenses.
@@ -243,3 +240,24 @@ Sample response
 include::{snippets}/groups/get-group-settle-up-expenses/http-response.adoc[]
 Response fields
 include::{snippets}/groups/get-group-settle-up-expenses/response-fields.adoc[]
+
+=== Send pending debt reminder
+When owed money one may request to broadcast payback reminder to the group members having negative balance.
+
+Sample request
+include::{snippets}/groups/send-debt-reminder/http-request.adoc[]
+Path parameters
+include::{snippets}//groups/send-debt-reminder/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/send-debt-reminder/http-response.adoc[]
+
+
+== Currency
+
+=== Get all currencies
+Sample request
+include::{snippets}/currency/get-all-currencies/http-request.adoc[]
+Sample response
+include::{snippets}/currency/get-all-currencies/http-response.adoc[]
+Response fields
+include::{snippets}/currency/get-all-currencies/response-fields.adoc[]

@@ -2,7 +2,6 @@ package com.splitthebill.server.controller;
 
 import com.splitthebill.server.dto.group.GroupCreateDto;
 import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
-import com.splitthebill.server.dto.group.GroupReadDto;
 import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.GroupExpense;
@@ -12,7 +11,6 @@ import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.service.GroupService;
-import lombok.NonNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +19,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +133,7 @@ public class GroupControllerTest {
                             .build();
                     Long memberId = 1L;
                     List<PersonGroup> groupMembers = new ArrayList<>();
-                    for(Long id : groupDto.membersIds){
+                    for (Long id : groupDto.membersIds) {
                         PersonGroup member = PersonGroup.builder()
                                 .id(memberId)
                                 .person(mockPersonRepository
@@ -479,6 +473,34 @@ public class GroupControllerTest {
                                 fieldWithPath("[].amount").description("The amount creditor payed"),
                                 fieldWithPath("[].currencyAbbreviation").description("Abbreviation of the currency used for expense")
                         )));
+    }
+
+
+    @WithMockUser
+    @Test
+    public void testSendDebtReminder() throws Exception {
+        Currency euro = Currency.builder()
+                .id(1L)
+                .abbreviation("EUR")
+                .exchangeRate(new BigDecimal("1"))
+                .build();
+        Person john = Person.builder()
+                .id(1L)
+                .name("John Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(john);
+        doNothing().when(groupService).sendDebtNotification(john, 1L);
+        mockMvc.perform(post("/groups/{groupId}/sendDebtReminder", 1))
+                .andExpect(status().isOk())
+                .andDo(document("send-debt-reminder",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("groupId").description("The id of a group")
+                        )));
+
     }
 
 }

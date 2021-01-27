@@ -84,6 +84,8 @@ public class GroupController {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
+            if(!person.getId().equals(expenseDto.creditorId))
+                throw new IllegalAccessException("Expense debtor must be request issuer.");
             groupService.addExpense(groupId, expenseDto);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
@@ -107,5 +109,17 @@ public class GroupController {
         } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping(path = "/{groupId}/sendDebtReminder")
+    public ResponseEntity<?> sendDebtReminder(@PathVariable Long groupId, Authentication authentication) {
+        try{
+            Person issuer = jwtUtils.getPersonFromAuthentication(authentication);
+            groupService.sendDebtNotification(issuer, groupId);
+            return ResponseEntity.ok().build();
+        }catch (EntityNotFoundException | IllegalStateException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 }
