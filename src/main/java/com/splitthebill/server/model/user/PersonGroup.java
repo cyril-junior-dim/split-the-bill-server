@@ -2,6 +2,11 @@ package com.splitthebill.server.model.user;
 
 import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
+import com.splitthebill.server.model.expense.Expense;
+import com.splitthebill.server.model.expense.GroupExpense;
+import com.splitthebill.server.model.expense.PersonGroupExpense;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,10 +14,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
+@Builder
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class PersonGroup {
 
     @Id
@@ -51,6 +59,54 @@ public class PersonGroup {
 
     public void subtractFromBalance(Currency currency, BigDecimal amount) {
         addToBalance(currency, amount.negate());
+    }
+
+    public List<GroupExpense> getSettleUpExpenses() {
+        return balances.keySet().stream().map(this::getSettleUpExpenses).reduce(
+                new ArrayList<>(), (allExpenses, currencyExpenses) -> {
+                    allExpenses.addAll(currencyExpenses);
+                    return allExpenses;
+                }
+        );
+    }
+
+    public List<GroupExpense> getSettleUpExpenses(Currency currency) {
+        BigDecimal balance = balances.get(currency).negate();
+        if(balance.compareTo(BigDecimal.ZERO) <= 0)
+            return List.of();
+
+        Stack<PersonGroup> positiveBalanceMembers = this.group.getMembers()
+                .stream()
+                .filter(personGroup -> personGroup.balances.getOrDefault(currency, BigDecimal.ZERO).compareTo(BigDecimal.ZERO) > 0)
+                .filter(personGroup -> !personGroup.equals(this))
+                .sorted(Comparator.comparing(p -> p.balances.get(currency)))
+                .collect(Collectors.toCollection(Stack::new));
+        List<GroupExpense> expenses = new ArrayList<>();
+
+        System.out.println(currency);
+        positiveBalanceMembers.forEach(p -> System.out.println(p.person.getName()));
+
+        while(balance.compareTo(BigDecimal.ZERO) > 0) {
+            PersonGroup receiver = positiveBalanceMembers.pop();
+            BigDecimal amountDue = balance.min(receiver.getBalances().get(currency));
+            GroupExpense groupExpense = new GroupExpense();
+            groupExpense.setGroup(this.group);
+            groupExpense.setCreditor(this);
+            groupExpense.setTitle("Settle up");
+            groupExpense.setCurrency(currency);
+            groupExpense.setAmount(amountDue);
+
+            PersonGroupExpense issuerExpense = new PersonGroupExpense();
+            issuerExpense.setDebtor(receiver);
+            issuerExpense.setWeight(1);
+            issuerExpense.setExpense(groupExpense);
+
+            groupExpense.setPersonGroupExpenses(List.of(issuerExpense));
+
+            expenses.add(groupExpense);
+            balance = balance.subtract(amountDue);
+        }
+        return expenses;
     }
 
 }
