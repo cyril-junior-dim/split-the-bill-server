@@ -3,6 +3,7 @@ package com.splitthebill.server.model.expense;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.user.PersonGroup;
 import lombok.*;
+import org.hibernate.validator.cfg.context.Cascadable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,7 +26,7 @@ public class GroupExpense extends Expense {
     @ManyToOne
     private PersonGroup creditor;
 
-    @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "expense", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private List<PersonGroupExpense> personGroupExpenses;
 
     public int getTotalWeight() {
