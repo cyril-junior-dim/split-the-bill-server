@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -21,7 +23,7 @@ public abstract class Expense {
     private BigDecimal amount;
 
     @CreationTimestamp
-    private Date created;
+    private LocalDateTime created;
 
     private String receiptPhoto;
 

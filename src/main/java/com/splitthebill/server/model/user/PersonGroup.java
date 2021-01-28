@@ -13,6 +13,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ public class PersonGroup {
     private Long id;
 
     @CreationTimestamp
-    private Date joined;
+    private LocalDateTime joined;
 
     @ManyToOne
     private Person person;

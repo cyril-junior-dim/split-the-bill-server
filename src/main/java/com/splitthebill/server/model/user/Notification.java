@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +28,6 @@ public class Notification {
     private String description;
 
     @CreationTimestamp
-    private Date created;
+    private LocalDateTime created;
 
 }

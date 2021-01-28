@@ -21,6 +21,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +75,7 @@ public class OwnExpenseControllerTest {
         cinema.setAmount(new BigDecimal("10"));
         cinema.setCurrency(euro);
         cinema.setTitle("Cinema");
-        cinema.setCreated(new Date());
+        cinema.setCreated(LocalDateTime.now());
 
         OwnExpense giftForMike = OwnExpense.builder()
                 .id(2L)
@@ -82,7 +84,7 @@ public class OwnExpenseControllerTest {
         giftForMike.setAmount(new BigDecimal("20"));
         giftForMike.setCurrency(euro);
         giftForMike.setTitle("Gift for Mike");
-        giftForMike.setCreated(new Date());
+        giftForMike.setCreated(LocalDateTime.now());
         john.setOwnExpenses(List.of(cinema, giftForMike));
 
         when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(john);
@@ -134,7 +136,7 @@ public class OwnExpenseControllerTest {
                     ownExpense.setAmount(expenseDto.getAmount());
                     ownExpense.setTitle(expenseDto.getTitle());
                     ownExpense.setReceiptPhoto(expenseDto.getReceiptPhoto());
-                    ownExpense.setCreated(new Date());
+                    ownExpense.setCreated(LocalDateTime.now());
                     john.setOwnExpenses(List.of(ownExpense));
                     return ownExpense;
                 }

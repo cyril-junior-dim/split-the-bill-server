@@ -35,6 +35,9 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -617,12 +620,11 @@ public class GroupControllerTest {
                         debtors.add(personExpense);
                     }
                     FrequencyUnit frequencyUnit = FrequencyUnit.valueOf(createDto.schedule.frequencyUnit);
-                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                    Date nextTriggerDate;
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    LocalDate nextTriggerDate;
                     try {
-                        nextTriggerDate = formatter.parse(String.valueOf(createDto.schedule.nextTrigger));
-                        nextTriggerDate = formatter.parse(formatter.format(nextTriggerDate));
-                    } catch (ParseException e) {
+                        nextTriggerDate = LocalDate.parse(createDto.schedule.nextTrigger, formatter);
+                    } catch (DateTimeParseException e) {
                         throw new IllegalArgumentException("Next trigger date in wrong format. Required format: dd-MM-yyyy");
                     }
                     Schedule schedule = Schedule.builder()

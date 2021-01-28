@@ -4,6 +4,8 @@ import com.splitthebill.server.model.expense.OwnExpense;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -11,7 +13,7 @@ public class OwnExpenseReadDto {
     Long ownExpenseId;
     String title;
     BigDecimal amount;
-    Date created;
+    LocalDateTime created;
     String receiptPhoto;
     String currencyAbbreviation;
 

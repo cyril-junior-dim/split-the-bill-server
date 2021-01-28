@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 public class ScheduleReadDto {
@@ -16,8 +17,7 @@ public class ScheduleReadDto {
     public ScheduleReadDto(Schedule schedule) {
         this.amount = schedule.getAmount();
         this.frequencyUnit = schedule.getFrequencyUnit().name();
-        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        this.nextTrigger = formatter.format(schedule.getNextTrigger());
+        this.nextTrigger = schedule.getNextTrigger().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
 }

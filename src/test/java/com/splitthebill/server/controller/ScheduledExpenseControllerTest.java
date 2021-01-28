@@ -29,6 +29,9 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +114,7 @@ public class ScheduledExpenseControllerTest {
                 .id(1L)
                 .amount(1)
                 .frequencyUnit(FrequencyUnit.MONTH)
-                .nextTrigger(new SimpleDateFormat("dd-MM-yyyy").parse("01-02-2021"))
+                .nextTrigger(LocalDate.parse("01-02-2021", DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .build();
 
         ScheduledGroupExpense scheduledFlatRent = ScheduledGroupExpense.builder()
@@ -139,7 +142,7 @@ public class ScheduledExpenseControllerTest {
                 .id(2L)
                 .amount(2)
                 .frequencyUnit(FrequencyUnit.WEEK)
-                .nextTrigger(new SimpleDateFormat("dd-MM-yyyy").parse("13-02-2021"))
+                .nextTrigger(LocalDate.parse("01-02-2021", DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .build();
         ScheduledOwnExpense scheduledGymMembership = ScheduledOwnExpense.builder()
                 .id(1L)
@@ -227,12 +230,11 @@ public class ScheduledExpenseControllerTest {
                         throw new IllegalArgumentException("Incorrect frequency unit. Should be 'DAY', 'WEEK', 'MONTH' or 'YEAR'.");
                     }
 
-                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                    Date nextTriggerDate;
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    LocalDate nextTriggerDate;
                     try {
-                        nextTriggerDate = formatter.parse(String.valueOf(createDto.schedule.nextTrigger));
-                        nextTriggerDate = formatter.parse(formatter.format(nextTriggerDate));
-                    } catch (ParseException e) {
+                        nextTriggerDate = LocalDate.parse(createDto.schedule.nextTrigger, formatter);
+                    } catch (DateTimeParseException e) {
                         throw new IllegalArgumentException("Next trigger date in wrong format. Required format: dd-MM-yyyy");
                     }
 
