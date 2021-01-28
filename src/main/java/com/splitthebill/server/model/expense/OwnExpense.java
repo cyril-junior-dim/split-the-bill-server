@@ -1,13 +1,15 @@
 package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.user.Person;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class OwnExpense extends Expense {
 

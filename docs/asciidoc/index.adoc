@@ -251,6 +251,27 @@ include::{snippets}//groups/send-debt-reminder/path-parameters.adoc[]
 Sample response
 include::{snippets}/groups/send-debt-reminder/http-response.adoc[]
 
+== Own expenses
+Users have the ability to track their own, private expenses and analyze them.
+
+=== Get all own expenses
+Sample request
+include::{snippets}/own-expense/get-all-expenses/http-request.adoc[]
+Sample response
+include::{snippets}/own-expense/get-all-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/own-expense/get-all-expenses/response-fields.adoc[]
+
+=== Add own expense
+Sample request
+include::{snippets}/own-expense/create-own-expense/http-request.adoc[]
+Request fields
+include::{snippets}/own-expense/create-own-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/own-expense/create-own-expense/http-response.adoc[]
+Response fields
+include::{snippets}/own-expense/create-own-expense/response-fields.adoc[]
+
 
 == Currency
 
