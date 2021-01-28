@@ -6,8 +6,11 @@ import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.repository.BasicUserAccountRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 @Service
@@ -26,9 +29,12 @@ public class BasicUserAccountService {
         return basicUserAccountRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 
-    public BasicUserAccount createUserAccount(BasicUserAccountCreateDto accountDto) throws Exception {
+    public BasicUserAccount createUserAccount(BasicUserAccountCreateDto accountDto)
+            throws DataIntegrityViolationException {
         //TODO implement rest
         BasicUserAccount userAccount = new BasicUserAccount(accountDto);
+        if(basicUserAccountRepository.existsByUsernameOrEmail(accountDto.username, accountDto.email))
+            throw new DataIntegrityViolationException("Username or email already exists.");
         return basicUserAccountRepository.save(userAccount);
     }
 

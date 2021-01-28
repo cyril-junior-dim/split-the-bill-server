@@ -4,18 +4,22 @@ import com.splitthebill.server.dto.JwtResponseDto;
 import com.splitthebill.server.dto.LoginRequestDto;
 import com.splitthebill.server.dto.BasicUserAccountCreateDto;
 import com.splitthebill.server.dto.ThirdPartyUserAccountCreateDto;
+import com.splitthebill.server.model.user.BasicUserAccount;
 import com.splitthebill.server.model.user.ThirdPartyUserAccount;
+import com.splitthebill.server.model.user.UserAccount;
 import com.splitthebill.server.security.JwtUtils;
 import com.splitthebill.server.service.BasicUserAccountService;
 import com.splitthebill.server.service.ThirdPartyUserAccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -62,11 +66,14 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody BasicUserAccountCreateDto userAccount) {
+        String unHashedPassword = userAccount.password;
         userAccount.password = encoder.encode(userAccount.password);
         try{
             basicUserAccountService.createUserAccount(userAccount);
-        }catch (Exception ignored){}
-        return ResponseEntity.ok().build();
+        }catch (DataIntegrityViolationException exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+        return authenticateUser(new LoginRequestDto(userAccount.username, unHashedPassword));
     }
 
     @PostMapping("/oauth2/signin")

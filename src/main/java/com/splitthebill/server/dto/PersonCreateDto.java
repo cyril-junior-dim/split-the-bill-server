@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PersonCreateDto {
     public String name;
+    public String currencyAbbreviation;
 }

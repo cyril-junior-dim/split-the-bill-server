@@ -1,20 +1,30 @@
 package com.splitthebill.server.model.expense;
 
 import com.splitthebill.server.model.user.PersonGroup;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class PersonGroupExpense {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private BigDecimal splitRatio;
+    @Min(0)
+    @Max(10)
+    private int weight;
 
     private boolean isReviewed = false;
 
@@ -24,8 +34,8 @@ public class PersonGroupExpense {
     @ManyToOne
     private GroupExpense expense;
 
-    public PersonGroupExpense(double splitRatio, PersonGroup debtor, GroupExpense expense) {
-        this.splitRatio = BigDecimal.valueOf(splitRatio);
+    public PersonGroupExpense(int weight, PersonGroup debtor, GroupExpense expense) {
+        this.weight = weight;
         this.debtor = debtor;
         this.expense = expense;
     }

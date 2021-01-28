@@ -11,6 +11,7 @@ public class BasicUserAccountCreateDto {
     @NotBlank
     public String password;
 
+    @NotBlank
     @Pattern(regexp = "[a-z0-9.]+@[a-z0-9][a-z0-9.]*\\.[a-z]{2,3}", message = "The email address is incorrect.")
     public String email;
 

@@ -2,23 +2,27 @@ package com.splitthebill.server.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.splitthebill.server.model.Currency;
-import com.splitthebill.server.model.expense.Expense;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.OwnExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
-import com.splitthebill.server.model.expense.scheduled.ScheduledPersonGroupExpense;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledPersonGroupExpense;
+import com.splitthebill.server.model.expense.scheduled.own.ScheduledOwnExpense;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@Builder
 public class Person extends RepresentationModel<Person> {
 
     @Id
@@ -27,46 +31,51 @@ public class Person extends RepresentationModel<Person> {
 
     private String name;
 
-    private BigDecimal overallBalance;
-
     @JsonIgnore
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
     @OneToMany(mappedBy = "person1")
-    private List<Friendship> friendships;
+    private List<Friendship> friendships = new ArrayList<>();
 
     @OneToMany(mappedBy = "person")
-    private List<PersonGroup> personGroups;
+    private List<PersonGroup> personGroups = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner")
-    private List<OwnExpense> ownExpenses;
+    private List<OwnExpense> ownExpenses = new ArrayList<>();
 
     @OneToMany(mappedBy = "creditor")
-    private List<GroupExpense> groupExpenses;
+    private List<GroupExpense> groupExpenses = new ArrayList<>();
 
     @OneToMany(mappedBy = "debtor")
-    private List<PersonGroupExpense> personGroupExpenses;
+    private List<PersonGroupExpense> personGroupExpenses = new ArrayList<>();
 
     @OneToMany(mappedBy = "debtor")
-    private List<ScheduledPersonGroupExpense> scheduledPersonGroupExpenses;
+    private List<ScheduledPersonGroupExpense> scheduledPersonGroupExpenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "person")
+    private List<ScheduledOwnExpense> scheduledOwnExpenses = new ArrayList<>();
 
     @ManyToOne
     private Currency preferredCurrency;
 
-    protected Person(){
+    @ElementCollection
+    @CollectionTable(name = "person_balance")
+    @MapKeyJoinColumn(name = "currency_id")
+    @Column(name = "balance")
+    private Map<Currency, BigDecimal> balances = new HashMap<>();
 
-    }
-
-    public Person(UserAccount userAccount, String name){
+    public Person(UserAccount userAccount, String name) {
         this.userAccount = userAccount;
         this.name = name;
-        this.overallBalance = BigDecimal.ZERO;
-        this.friendships = List.of();
-        this.personGroups = List.of();
-        this.ownExpenses = List.of();
-        this.groupExpenses = List.of();
-        this.personGroupExpenses = List.of();
-        this.scheduledPersonGroupExpenses = List.of();
     }
+
+    public boolean isMemberOfGroup(Long groupId) {
+        return getPersonGroups().stream().anyMatch(x -> x.getGroup().getId().equals(groupId));
+    }
+
+    public void addOwnExpense(OwnExpense ownExpense) {
+        ownExpenses.add(ownExpense);
+    }
+
 }

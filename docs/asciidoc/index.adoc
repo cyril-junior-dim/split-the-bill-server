@@ -1,0 +1,332 @@
+= Split The Bill API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== User account
+User account is a starting point of the app. Based on the user account, the token is generated
+which is then required to authenticate the user. Please note that `/auth/*` is the only endpoint path
+that can be accessed without the token. All other endpoints will not allow the user to interact with any data
+unless they provide the token.
+
+=== Basic user account
+Basic user account requires a user to provide a username, password and email. Username and email have to be UNIQUE. +
+NOTE! After creating a basic user account it is necessary to create a `Person`.
+
+==== Basic user account signup
+Sample request
+include::{snippets}/auth/register-user/http-request.adoc[]
+Request fields
+include::{snippets}/auth/register-user/request-fields.adoc[]
+Sample response
+include::{snippets}/auth/register-user/http-response.adoc[]
+Response fields
+include::{snippets}/auth/register-user/response-fields.adoc[]
+
+==== Basic user login
+Sample request
+include::{snippets}/auth/authenticate-user/http-request.adoc[]
+Request fields
+include::{snippets}/auth/authenticate-user/request-fields.adoc[]
+Sample response
+include::{snippets}/auth/authenticate-user/http-response.adoc[]
+Response fields
+include::{snippets}/auth/authenticate-user/response-fields.adoc[]
+
+=== Third party user account
+User can also choose to sign in using third party authentication providers. After sending the appropriate request,
+the account is created and the API redirects the user to the client app with token embedded in the URL. +
+E.g. splitthebill://login?token=userAccountToken
+
+==== Google sign-in
+Sample request
+include::{snippets}/auth/google-sign-in/http-request.adoc[]
+
+==== Facebook sign-in
+Sample request
+include::{snippets}/auth/facebook-sign-in/http-request.adoc[]
+
+=== Get user account
+This endpoint is used to get data on user account (both basic and third-party type). +
+WARNING! This endpoint requires a token!
+
+Sample request
+include::{snippets}/user-account/get-user-account/http-request.adoc[]
+Sample response
+include::{snippets}/user-account/get-user-account/http-response.adoc[]
+Response fields
+include::{snippets}/user-account/get-user-account/response-fields.adoc[]
+Links description
+include::{snippets}/user-account/get-user-account/links.adoc[]
+
+== Person
+Person is used as an "overlay" to user account. It is more safe to make references
+to the object not involved in storing credentials.
+
+=== Get person
+Sample request
+include::{snippets}/person/get-person/http-request.adoc[]
+Sample response
+include::{snippets}/person/get-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/get-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/get-person/links.adoc[]
+
+=== Create person
+Sample request
+include::{snippets}/person/create-person/http-request.adoc[]
+Request fields
+include::{snippets}/person/create-person/request-fields.adoc[]
+Sample response
+include::{snippets}/person/create-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/create-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/create-person/links.adoc[]
+
+=== Update person
+It is possible to change the name or/and preferred currency of a person. +
+
+Sample request
+include::{snippets}/person/update-person/http-request.adoc[]
+Request fields
+include::{snippets}/person/update-person/request-fields.adoc[]
+Sample response
+include::{snippets}/person/update-person/http-response.adoc[]
+Response fields
+include::{snippets}/person/update-person/response-fields.adoc[]
+Links description
+include::{snippets}/person/update-person/links.adoc[]
+
+
+== Friendship
+Friendship is designed a two directional relationship between two people.
+Therefore, if `Person One` requests friendship to `Person Two`
+then the relation of `Person Two` to `Person One` is also created. +
+
+.Friendship types
+* Pending Friendship (`Person One` sent request to `Person Two` but it has not been accepted yet)
+* Received Friendship Request (Same as above but from `Person Two` perspective)
+* Confirmed Friendship (Both people have confirmed friendship.)
+
+=== Get all friendships
+Sample request
+include::{snippets}/friendship/get-all-friendships/http-request.adoc[]
+Sample response
+include::{snippets}/friendship/get-all-friendships/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/get-all-friendships/response-fields-beneath-friendships.adoc[]
+
+=== Send friendship request
+Sample request
+include::{snippets}/friendship/send-friendship-request/http-request.adoc[]
+Request fields
+include::{snippets}/friendship/send-friendship-request/request-fields.adoc[]
+Sample response +
+NOTE! Returns pending friendship.
+include::{snippets}/friendship/send-friendship-request/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/send-friendship-request/response-fields.adoc[]
+
+=== Accept friendship request
+Sample request
+include::{snippets}/friendship/accept-friendship-request/http-request.adoc[]
+Path parameters +
+include::{snippets}/friendship/accept-friendship-request/path-parameters.adoc[]
+Sample response +
+NOTE! Returns confirmed friendship.
+include::{snippets}/friendship/accept-friendship-request/http-response.adoc[]
+Response fields
+include::{snippets}/friendship/accept-friendship-request/response-fields.adoc[]
+
+
+=== Break friendship
+Sample request
+include::{snippets}/friendship/break-friendship-request/http-request.adoc[]
+Path parameters +
+include::{snippets}/friendship/break-friendship-request/path-parameters.adoc[]
+Sample response
+include::{snippets}/friendship/break-friendship-request/http-response.adoc[]
+
+
+== Notification
+Notifications are simple text messages with titles. Each user is capable of receiving the notifications
+as well as sending some. Examples given below.
+
+=== Get all notifications
+Sample request
+include::{snippets}/notification/get-all-notifications/http-request.adoc[]
+Sample response +
+include::{snippets}/notification/get-all-notifications/http-response.adoc[]
+Response fields
+include::{snippets}/notification/get-all-notifications/response-fields.adoc[]
+
+=== Mark notification reviewed
+When user reads a notification, the following should be issued.
+Sample request
+include::{snippets}/notification/mark-notification-reviewed/http-request.adoc[]
+Path parameters +
+include::{snippets}/notification/mark-notification-reviewed/path-parameters.adoc[]
+Sample response +
+include::{snippets}/notification/mark-notification-reviewed/http-response.adoc[]
+Response fields
+include::{snippets}/notification/mark-notification-reviewed/response-fields.adoc[]
+
+
+== Group
+A group is formed by at least two people. This is a base for creating shared expenses.
+
+=== Get all user groups
+Sample request
+include::{snippets}/groups/get-all-user-groups/http-request.adoc[]
+Sample response
+include::{snippets}/groups/get-all-user-groups/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-all-user-groups/response-fields.adoc[]
+
+=== Get group by id
+Sample request
+include::{snippets}/groups/get-group-by-id/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/get-group-by-id/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/get-group-by-id/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-group-by-id/response-fields.adoc[]
+
+=== Create group
+Sample request
+include::{snippets}/groups/create-group/http-request.adoc[]
+Request fields
+include::{snippets}/groups/create-group/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/create-group/http-response.adoc[]
+Response fields
+include::{snippets}/groups/create-group/response-fields.adoc[]
+
+=== Add group member
+Sample request
+include::{snippets}/groups/add-group-member/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/add-group-member/path-parameters.adoc[]
+Request parameters
+include::{snippets}/groups/add-group-member/request-parameters.adoc[]
+Sample response
+include::{snippets}/groups/add-group-member/http-response.adoc[]
+
+=== Create group expense
+Sample request
+include::{snippets}/groups/create-group-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/create-group-expense/path-parameters.adoc[]
+Request fields
+include::{snippets}/groups/create-group-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/create-group-expense/http-response.adoc[]
+
+=== Get settle up expenses
+When a user has pending debts in a group, they may want to settle up.
+This endpoint returns expenses that are to be performed in order to settle up user's balance. +
+
+Sample request
+include::{snippets}/groups/get-group-settle-up-expenses/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/get-group-settle-up-expenses/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/get-group-settle-up-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/groups/get-group-settle-up-expenses/response-fields.adoc[]
+
+=== Send pending debt reminder
+When owed money one may request to broadcast payback reminder to the group members having negative balance.
+
+Sample request
+include::{snippets}/groups/send-debt-reminder/http-request.adoc[]
+Path parameters
+include::{snippets}//groups/send-debt-reminder/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/send-debt-reminder/http-response.adoc[]
+
+== Own expenses
+Users have the ability to track their own, private expenses and analyze them.
+
+=== Get all own expenses
+Sample request
+include::{snippets}/own-expense/get-all-expenses/http-request.adoc[]
+Sample response
+include::{snippets}/own-expense/get-all-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/own-expense/get-all-expenses/response-fields.adoc[]
+
+=== Add own expense
+Sample request
+include::{snippets}/own-expense/create-own-expense/http-request.adoc[]
+Request fields
+include::{snippets}/own-expense/create-own-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/own-expense/create-own-expense/http-response.adoc[]
+Response fields
+include::{snippets}/own-expense/create-own-expense/response-fields.adoc[]
+
+
+== Scheduled expenses
+It is possible to schedule both group and own expense wrapping it into schedule.
+
+=== Get all scheduled expenses
+Sample request
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/http-request.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/response-fields.adoc[]
+
+=== Schedule a group expense
+Sample request
+include::{snippets}/groups/schedule-group-expense/http-request.adoc[]
+Request fields
+include::{snippets}/groups/schedule-group-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/schedule-group-expense/http-response.adoc[]
+Response fields
+include::{snippets}/groups/schedule-group-expense/response-fields.adoc[]
+
+=== Delete scheduled group expense
+Sample request
+include::{snippets}/groups/delete-scheduled-group-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/delete-scheduled-group-expense/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/delete-scheduled-group-expense/http-response.adoc[]
+
+=== Schedule own expense
+It is possible to schedule an own expense wrapping it into schedule.
+Sample request
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/http-request.adoc[]
+Request fields
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/http-response.adoc[]
+Response fields
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/response-fields.adoc[]
+
+=== Delete scheduled own expense
+Sample request
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/path-parameters.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/http-response.adoc[]
+
+== Currency
+
+=== Get all currencies
+Sample request
+include::{snippets}/currency/get-all-currencies/http-request.adoc[]
+Sample response
+include::{snippets}/currency/get-all-currencies/http-response.adoc[]
+Response fields
+include::{snippets}/currency/get-all-currencies/response-fields.adoc[]
