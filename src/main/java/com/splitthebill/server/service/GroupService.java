@@ -1,5 +1,7 @@
 package com.splitthebill.server.service;
 
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledExpenseParticipantCreateDto;
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledGroupExpenseCreateDto;
 import com.splitthebill.server.dto.group.ExpenseParticipantCreateDto;
 import com.splitthebill.server.dto.group.GroupCreateDto;
 import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
@@ -7,20 +9,23 @@ import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
-import com.splitthebill.server.model.user.Notification;
+import com.splitthebill.server.model.expense.scheduled.FrequencyUnit;
+import com.splitthebill.server.model.expense.scheduled.Schedule;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledGroupExpense;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledPersonGroupExpense;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.model.user.UserAccount;
-import com.splitthebill.server.repository.CurrencyRepository;
-import com.splitthebill.server.repository.GroupExpenseRepository;
-import com.splitthebill.server.repository.GroupRepository;
-import com.splitthebill.server.repository.PersonGroupRepository;
+import com.splitthebill.server.repository.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +50,10 @@ public class GroupService {
 
     @NonNull
     private final NotificationService notificationService;
+
+    @NonNull
+    private final ScheduledGroupExpenseRepository scheduledGroupExpenseRepository;
+
 
     public Group createGroup(GroupCreateDto groupDto) throws EntityNotFoundException {
         Group group = new Group();
@@ -114,15 +123,15 @@ public class GroupService {
         groupRepository.save(group);
     }
 
-    public void sendDebtNotification(Person issuer, Long groupId){
+    public void sendDebtNotification(Person issuer, Long groupId) {
         PersonGroup membership = personGroupRepository.findByPersonAndGroup_Id(issuer, groupId)
                 .orElseThrow(EntityNotFoundException::new);
         StringBuilder owings = new StringBuilder();
         List<UserAccount> notificationRecipients = new ArrayList<>();
         boolean first = true;
-        for(Map.Entry<Currency, BigDecimal> balance : membership.getBalances().entrySet()){
-            if(balance.getValue().compareTo(BigDecimal.ZERO) > 0){
-                if(!first)
+        for (Map.Entry<Currency, BigDecimal> balance : membership.getBalances().entrySet()) {
+            if (balance.getValue().compareTo(BigDecimal.ZERO) > 0) {
+                if (!first)
                     owings.append(", ");
                 owings.append(balance.getValue()).append(" in ").append(balance.getKey().getAbbreviation());
                 first = false;
@@ -136,14 +145,79 @@ public class GroupService {
                 );
             }
         }
-        if(owings.length() == 0){
+        if (owings.length() == 0) {
             throw new IllegalStateException("Cannot request debt reminder when owed no money.");
         }
 
         notificationService.sendNotificationToUserAccounts("Debt reminder",
                 "You have pending debts in group " + membership.getGroup().getName() + ". "
-                + membership.getPerson().getName() + " is owed " + owings + " and wants to settle up!",
+                        + membership.getPerson().getName() + " is owed " + owings + " and wants to settle up!",
                 notificationRecipients);
+    }
+
+    public ScheduledGroupExpense scheduleGroupExpense(Long groupId, ScheduledGroupExpenseCreateDto createDto) {
+        ScheduledGroupExpense scheduledGroupExpense = new ScheduledGroupExpense();
+        Group group = getGroupById(groupId);
+        Currency currency = currencyRepository.findCurrencyByAbbreviation(createDto.currency)
+                .orElseThrow(EntityNotFoundException::new);
+        scheduledGroupExpense.setCurrency(currency);
+        scheduledGroupExpense.setGroup(group);
+        PersonGroup creditor = personGroupRepository.findById(createDto.creditorId)
+                .orElseThrow(() -> new EntityNotFoundException("Creditor has not been found"));
+        if (!personGroupRepository.existsByIdAndGroup(createDto.creditorId, group))
+            throw new IllegalArgumentException("Creditor doesn't belong to the group.");
+        scheduledGroupExpense.setCreditor(creditor);
+        BigDecimal amount = createDto.amount;
+        scheduledGroupExpense.setAmount(amount);
+        LinkedList<ScheduledPersonGroupExpense> debtors = new LinkedList<>();
+        for (ScheduledExpenseParticipantCreateDto participant : createDto.debtors) {
+            if (!personGroupRepository.existsByIdAndGroup(participant.debtorId, group))
+                throw new IllegalArgumentException("One of the debtors doesn't belong to the group.");
+            PersonGroup person = personGroupRepository.findById(participant.debtorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Debtor has not been found"));
+            ScheduledPersonGroupExpense personExpense = ScheduledPersonGroupExpense.builder()
+                    .weight(participant.weight)
+                    .debtor(person)
+                    .scheduledGroupExpense(scheduledGroupExpense)
+                    .build();
+            debtors.add(personExpense);
+        }
+
+        FrequencyUnit frequencyUnit = FrequencyUnit.valueOf(createDto.schedule.frequencyUnit);
+
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date nextTriggerDate;
+        try {
+            nextTriggerDate = formatter.parse(String.valueOf(createDto.schedule.nextTrigger));
+            nextTriggerDate = formatter.parse(formatter.format(nextTriggerDate));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Next trigger date in wrong format. Required format: dd-MM-yyyy");
+        }
+
+        Schedule schedule = Schedule.builder()
+                .amount(createDto.schedule.amount)
+                .frequencyUnit(frequencyUnit)
+                .nextTrigger(nextTriggerDate)
+                .build();
+        scheduledGroupExpense.setTitle(createDto.title);
+        scheduledGroupExpense.setSchedule(schedule);
+        scheduledGroupExpense.setScheduledPersonGroupExpenses(debtors);
+        return scheduledGroupExpenseRepository.save(scheduledGroupExpense);
+    }
+
+    public void deleteScheduledGroupExpense(Long groupId, Long expenseId, Person issuer) throws IllegalAccessException {
+        // Check if expense related to group
+        Group group = getGroupById(groupId);
+        ScheduledGroupExpense expense = scheduledGroupExpenseRepository.findById(expenseId)
+                .orElseThrow(EntityNotFoundException::new);
+        if (!expense.getGroup().getId().equals(group.getId()))
+            throw new IllegalAccessException("Scheduled expense is not related to this group.");
+
+        // Check if issuer is expense creditor
+        if (!issuer.getId().equals(expense.getCreditor().getPerson().getId()))
+            throw new IllegalAccessException("Must be a creditor of an expense in order to remove it.");
+
+        scheduledGroupExpenseRepository.delete(expense);
     }
 
 }

@@ -1,7 +1,13 @@
 package com.splitthebill.server.controller;
 
-import com.splitthebill.server.dto.group.*;
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledGroupExpenseCreateDto;
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledGroupExpenseReadDto;
+import com.splitthebill.server.dto.group.GroupCreateDto;
+import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
+import com.splitthebill.server.dto.group.GroupReadDto;
+import com.splitthebill.server.dto.group.PersonGroupReadDto;
 import com.splitthebill.server.model.Group;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledGroupExpense;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.security.JwtUtils;
@@ -53,12 +59,13 @@ public class GroupController {
     public ResponseEntity<?> deleteExpense(@PathVariable Long groupId, @RequestParam Long expenseId,
                                            Authentication authentication) {
         try {
+            groupService.getGroupById(groupId);
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group");
             groupService.deleteExpense(expenseId);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -66,10 +73,10 @@ public class GroupController {
     @GetMapping(path = "/{groupId}")
     public ResponseEntity<?> getGroupById(@PathVariable Long groupId, Authentication authentication) {
         try {
+            Group createdGroup = groupService.getGroupById(groupId);
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
-            Group createdGroup = groupService.getGroupById(groupId);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
         } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -107,7 +114,7 @@ public class GroupController {
 
     @GetMapping(path = "/{groupId}/settleUpExpenses")
     public ResponseEntity<?> getSettleUpExpenses(@PathVariable Long groupId,
-                                           Authentication authentication) {
+                                                 Authentication authentication) {
         try {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
@@ -125,13 +132,35 @@ public class GroupController {
 
     @PostMapping(path = "/{groupId}/sendDebtReminder")
     public ResponseEntity<?> sendDebtReminder(@PathVariable Long groupId, Authentication authentication) {
-        try{
+        try {
             Person issuer = jwtUtils.getPersonFromAuthentication(authentication);
             groupService.sendDebtNotification(issuer, groupId);
             return ResponseEntity.ok().build();
-        }catch (EntityNotFoundException | IllegalStateException e){
+        } catch (EntityNotFoundException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
 
+    @PostMapping(path = "/{groupId}/scheduledExpenses")
+    public ResponseEntity<?> scheduleGroupExpense(@PathVariable Long groupId,
+                                                  @Valid @RequestBody ScheduledGroupExpenseCreateDto createDto) {
+        try {
+            ScheduledGroupExpense scheduledGroupExpense = groupService.scheduleGroupExpense(groupId, createDto);
+            return ResponseEntity.ok(new ScheduledGroupExpenseReadDto(scheduledGroupExpense));
+        } catch (EntityNotFoundException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping(path = "/{groupId}/scheduledExpenses/{expenseId}")
+    public ResponseEntity<?> deleteScheduledExpense(@PathVariable Long groupId, @PathVariable Long expenseId,
+                                                    Authentication authentication) {
+        try {
+            Person issuer = jwtUtils.getPersonFromAuthentication(authentication);
+            groupService.deleteScheduledGroupExpense(groupId, expenseId, issuer);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException | IllegalAccessException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

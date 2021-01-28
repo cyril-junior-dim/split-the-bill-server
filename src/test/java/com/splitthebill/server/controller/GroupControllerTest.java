@@ -1,11 +1,17 @@
 package com.splitthebill.server.controller;
 
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledExpenseParticipantCreateDto;
+import com.splitthebill.server.dto.expense.scheduled.group.ScheduledGroupExpenseCreateDto;
 import com.splitthebill.server.dto.group.GroupCreateDto;
 import com.splitthebill.server.dto.group.GroupExpenseCreateDto;
 import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.Group;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.PersonGroupExpense;
+import com.splitthebill.server.model.expense.scheduled.FrequencyUnit;
+import com.splitthebill.server.model.expense.scheduled.Schedule;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledGroupExpense;
+import com.splitthebill.server.model.expense.scheduled.group.ScheduledPersonGroupExpense;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.model.user.UserAccount;
@@ -24,10 +30,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -501,6 +509,184 @@ public class GroupControllerTest {
                                 parameterWithName("groupId").description("The id of a group")
                         )));
 
+    }
+
+    @WithMockUser
+    @Test
+    public void testScheduleGroupExpense() throws Exception {
+        String postBody = "{" +
+                "    \"creditorId\": 1," +
+                "    \"title\": \"Some scheduled expense\"," +
+                "    \"debtors\": [" +
+                "        {" +
+                "            \"debtorId\": 1," +
+                "            \"weight\": 1" +
+                "        }," +
+                "        {" +
+                "            \"debtorId\": 2," +
+                "            \"weight\": 1" +
+                "        }," +
+                "        {" +
+                "            \"debtorId\": 3," +
+                "            \"weight\": 1" +
+                "        }]," +
+                "    \"amount\": 60," +
+                "    \"currency\": \"EUR\"," +
+                "    \"schedule\": {" +
+                "        \"amount\": 3," +
+                "        \"frequencyUnit\": \"WEEK\"," +
+                "        \"nextTrigger\": \"10-02-2021\"" +
+                "    }" +
+                "}";
+        Currency euro = Currency.builder()
+                .id(1L)
+                .abbreviation("EUR")
+                .exchangeRate(new BigDecimal("1"))
+                .build();
+        Currency americanDollar = Currency.builder()
+                .id(2L)
+                .abbreviation("USD")
+                .exchangeRate(new BigDecimal("0.85"))
+                .build();
+
+        Person john = Person.builder()
+                .id(1L)
+                .name("John Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person janet = Person.builder()
+                .id(2L)
+                .name("Janet Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person henry = Person.builder()
+                .id(3L)
+                .name("Henry Marks")
+                .balances(Map.of(americanDollar, BigDecimal.ZERO))
+                .preferredCurrency(americanDollar)
+                .build();
+        Group holidays = Group.builder()
+                .id(1L)
+                .name("Holidays in France")
+                .build();
+        PersonGroup johnMember = PersonGroup.builder()
+                .id(1L)
+                .person(john)
+                .group(holidays)
+                .balances(Map.of(americanDollar, new BigDecimal("-10"), euro, new BigDecimal("-3.30")))
+                .build();
+        PersonGroup janetMember = PersonGroup.builder()
+                .id(2L)
+                .person(janet)
+                .group(holidays)
+                .balances(Map.of(americanDollar, new BigDecimal("0"), euro, new BigDecimal("6.60")))
+                .build();
+        PersonGroup henryMember = PersonGroup.builder()
+                .id(3L)
+                .person(henry)
+                .group(holidays)
+                .balances(Map.of(americanDollar, new BigDecimal("10"), euro, new BigDecimal("-3.30")))
+                .build();
+        holidays.setMembers(List.of(johnMember, janetMember, henryMember));
+        john.setPersonGroups(List.of(johnMember));
+        janet.setPersonGroups(List.of(janetMember));
+        henry.setPersonGroups(List.of(henryMember));
+        when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(john);
+        when(groupService.scheduleGroupExpense(any(Long.class), any(ScheduledGroupExpenseCreateDto.class))).thenAnswer(
+                p -> {
+                    ScheduledGroupExpenseCreateDto createDto = p.getArgument(1, ScheduledGroupExpenseCreateDto.class);
+                    ScheduledGroupExpense scheduledGroupExpense = new ScheduledGroupExpense();
+                    scheduledGroupExpense.setCurrency(euro);
+                    scheduledGroupExpense.setGroup(holidays);
+                    scheduledGroupExpense.setCreditor(johnMember);
+                    BigDecimal amount = createDto.amount;
+                    scheduledGroupExpense.setAmount(amount);
+                    LinkedList<ScheduledPersonGroupExpense> debtors = new LinkedList<>();
+                    for (ScheduledExpenseParticipantCreateDto participant : createDto.debtors) {
+                        PersonGroup person = holidays.getMembers()
+                                .stream()
+                                .filter(m -> m.getId().equals(participant.debtorId)).findFirst()
+                                .orElseThrow(EntityNotFoundException::new);
+                        ScheduledPersonGroupExpense personExpense = ScheduledPersonGroupExpense.builder()
+                                .weight(participant.weight)
+                                .debtor(person)
+                                .scheduledGroupExpense(scheduledGroupExpense)
+                                .build();
+                        debtors.add(personExpense);
+                    }
+                    FrequencyUnit frequencyUnit = FrequencyUnit.valueOf(createDto.schedule.frequencyUnit);
+                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                    Date nextTriggerDate;
+                    try {
+                        nextTriggerDate = formatter.parse(String.valueOf(createDto.schedule.nextTrigger));
+                        nextTriggerDate = formatter.parse(formatter.format(nextTriggerDate));
+                    } catch (ParseException e) {
+                        throw new IllegalArgumentException("Next trigger date in wrong format. Required format: dd-MM-yyyy");
+                    }
+                    Schedule schedule = Schedule.builder()
+                            .amount(createDto.schedule.amount)
+                            .frequencyUnit(frequencyUnit)
+                            .nextTrigger(nextTriggerDate)
+                            .build();
+                    scheduledGroupExpense.setId(1L);
+                    scheduledGroupExpense.setTitle(createDto.title);
+                    scheduledGroupExpense.setSchedule(schedule);
+                    scheduledGroupExpense.setScheduledPersonGroupExpenses(debtors);
+                    return scheduledGroupExpense;
+                });
+        mockMvc.perform(post("/groups/{groupId}/scheduledExpenses", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postBody))
+                .andExpect(status().isOk())
+                .andDo(document("schedule-group-expense",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("groupId").description("Id of a group that an expense is to be added")
+                        ),
+                        requestFields(
+                                fieldWithPath("creditorId").description("Id of an expense creditor (relates to PersonGroup)"),
+                                fieldWithPath("title").description("Title of an expense"),
+                                fieldWithPath("amount").description("Amount to be spent"),
+                                fieldWithPath("currency").description("Currency abbreviation of an expense"),
+                                fieldWithPath("debtors[].debtorId").description("Id of debtor (relates to PersonGroup)"),
+                                fieldWithPath("debtors[].weight").description("Weight describing what part of an expense this debtor should cover"),
+                                fieldWithPath("schedule.amount").description("Number of frequency units to pass until next trigger"),
+                                fieldWithPath("schedule.frequencyUnit").description("Frequency unit e.g. DAY, MONTH"),
+                                fieldWithPath("schedule.nextTrigger").description("First trigger date in format dd-MM-yyy")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("Id of a scheduled group expense"),
+                                fieldWithPath("groupId").description("Id of a group to which the epxense belongs"),
+                                fieldWithPath("groupName").description("Name of a group"),
+                                fieldWithPath("title").description("Title of the scheduled group expense"),
+                                fieldWithPath("amount").description("The amount to be spent"),
+                                fieldWithPath("currency").description("Currency used for expense"),
+                                fieldWithPath("debtors[].debtorId").description("The id of a debtor. Relates to group member id (PersonGroup)"),
+                                fieldWithPath("debtors[].weight").description("Weight describing what part of an expense this debtor should cover"),
+                                fieldWithPath("debtors[].name").description("The name of a group member."),
+                                fieldWithPath("schedule.amount").description("Number of frequency units to pass until next trigger"),
+                                fieldWithPath("schedule.frequencyUnit").description("Frequency unit e.g. DAY, MONTH"),
+                                fieldWithPath("schedule.nextTrigger").description("The date describing when the expense will be added")
+                        )));
+    }
+
+    @WithMockUser
+    @Test
+    public void testDeleteScheduledExpense() throws Exception {
+        when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(mock(Person.class));
+        doNothing().when(groupService).deleteScheduledGroupExpense(anyLong(), anyLong(), any(Person.class));
+        mockMvc.perform(delete("/groups/{groupId}/scheduledExpenses/{expenseId}", 1, 1))
+                .andExpect(status().isNoContent())
+                .andDo(document("delete-scheduled-group-expense",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("groupId").description("Id of a group the expense relates to"),
+                                parameterWithName("expenseId").description("Id of the scheduled group expense")
+                        )));
     }
 
 }
