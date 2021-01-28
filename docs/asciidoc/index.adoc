@@ -273,6 +273,54 @@ Response fields
 include::{snippets}/own-expense/create-own-expense/response-fields.adoc[]
 
 
+== Scheduled expenses
+It is possible to schedule both group and own expense wrapping it into schedule.
+
+=== Get all scheduled expenses
+Sample request
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/http-request.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/http-response.adoc[]
+Response fields
+include::{snippets}/scheduled-expense/get-all-scheduled-expenses/response-fields.adoc[]
+
+=== Schedule a group expense
+Sample request
+include::{snippets}/groups/schedule-group-expense/http-request.adoc[]
+Request fields
+include::{snippets}/groups/schedule-group-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/groups/schedule-group-expense/http-response.adoc[]
+Response fields
+include::{snippets}/groups/schedule-group-expense/response-fields.adoc[]
+
+=== Delete scheduled group expense
+Sample request
+include::{snippets}/groups/delete-scheduled-group-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/groups/delete-scheduled-group-expense/path-parameters.adoc[]
+Sample response
+include::{snippets}/groups/delete-scheduled-group-expense/http-response.adoc[]
+
+=== Schedule own expense
+It is possible to schedule an own expense wrapping it into schedule.
+Sample request
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/http-request.adoc[]
+Request fields
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/request-fields.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/http-response.adoc[]
+Response fields
+include::{snippets}/scheduled-expense/create-own-scheduled-expense/response-fields.adoc[]
+
+=== Delete scheduled own expense
+Sample request
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/http-request.adoc[]
+Path parameters
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/path-parameters.adoc[]
+Sample response
+include::{snippets}/scheduled-expense/delete-scheduled-own-expense/http-response.adoc[]
+
 == Currency
 
 === Get all currencies
