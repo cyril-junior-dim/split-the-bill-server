@@ -36,7 +36,7 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
     private List<PersonGroup> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "group", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private List<GroupExpense> expenses = new ArrayList<>();
 
     public void addExpense(GroupExpense expense) {

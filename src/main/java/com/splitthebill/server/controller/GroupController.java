@@ -98,8 +98,6 @@ public class GroupController {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
-            if(!person.getId().equals(expenseDto.creditorId))
-                throw new IllegalAccessException("Expense debtor must be request issuer.");
             groupService.addExpense(groupId, expenseDto);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
