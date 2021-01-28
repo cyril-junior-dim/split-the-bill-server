@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +52,28 @@ public class Group {
             BigDecimal splitRatio = BigDecimal.valueOf(participant.getWeight())
                     .divide(totalWeight, 4, RoundingMode.HALF_UP);
             BigDecimal toSubtract = amount.multiply(splitRatio).setScale(2, RoundingMode.HALF_UP);
-            System.out.println("toSubtract " + toSubtract);
             participant.getDebtor().subtractFromBalance(currency, toSubtract);
             amountLeft = amountLeft.subtract(toSubtract);
-            System.out.println("left " + amountLeft);
+        }
+        if (!amountLeft.equals(BigDecimal.ZERO))
+            creditor.addToBalance(currency, amountLeft.negate());
+    }
+
+    public void deleteExpense(GroupExpense expense) {
+        expenses.remove(expense);
+        PersonGroup creditor = expense.getCreditor();
+        BigDecimal amount = expense.getAmount();
+        Currency currency = expense.getCurrency();
+        creditor.addToBalance(currency, amount);
+        BigDecimal totalWeight = BigDecimal.valueOf(expense.getTotalWeight());
+        BigDecimal amountLeft = amount;
+        List<PersonGroupExpense> participants = expense.getPersonGroupExpenses();
+        for (PersonGroupExpense participant : participants){
+            BigDecimal splitRatio = BigDecimal.valueOf(participant.getWeight())
+                    .divide(totalWeight, 4, RoundingMode.HALF_UP);
+            BigDecimal toRecover = amount.multiply(splitRatio).setScale(2, RoundingMode.HALF_UP);
+            participant.getDebtor().addToBalance(currency, toRecover);
+            amountLeft = amountLeft.add(toRecover);
         }
         if (!amountLeft.equals(BigDecimal.ZERO))
             creditor.addToBalance(currency, amountLeft.negate());

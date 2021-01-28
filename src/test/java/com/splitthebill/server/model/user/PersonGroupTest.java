@@ -381,6 +381,174 @@ public class PersonGroupTest {
     }
 
     @Test
+    public void testBalanceAfterCreatingAndDeletingExpense(){
+        Currency euro = Currency.builder()
+                .id(1L)
+                .abbreviation("EUR")
+                .exchangeRate(BigDecimal.ONE)
+                .build();
+        Person john = Person.builder()
+                .id(1L)
+                .name("John Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person janet = Person.builder()
+                .id(2L)
+                .name("Janet Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person henry = Person.builder()
+                .id(3L)
+                .name("Henry Marks")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Group holidays = new Group();
+        holidays.setName("Holidays in France");
+        var startBalance = new HashMap<Currency, BigDecimal>();
+        startBalance.put(euro, BigDecimal.ZERO);
+        PersonGroup johnMember = PersonGroup.builder()
+                .id(1L)
+                .person(john)
+                .group(holidays)
+                .balances(startBalance)
+                .build();
+        PersonGroup janetMember = PersonGroup.builder()
+                .id(2L)
+                .person(janet)
+                .group(holidays)
+                .balances((HashMap<Currency, BigDecimal>)startBalance.clone())
+                .build();
+        PersonGroup henryMember = PersonGroup.builder()
+                .id(3L)
+                .person(henry)
+                .group(holidays)
+                .balances((HashMap<Currency, BigDecimal>)startBalance.clone())
+                .build();
+        holidays.setMembers(List.of(johnMember, janetMember, henryMember));
+        GroupExpense expense = new GroupExpense();
+        expense.setTitle("Drinks at the disco");
+        expense.setAmount(BigDecimal.valueOf(20));
+        expense.setCreditor(henryMember);
+        expense.setCurrency(euro);
+        List<PersonGroupExpense> participants = List.of(
+                PersonGroupExpense.builder().debtor(johnMember).expense(expense).weight(1).build(),
+                PersonGroupExpense.builder().debtor(janetMember).expense(expense).weight(1).build(),
+                PersonGroupExpense.builder().debtor(henryMember).expense(expense).weight(1).build()
+        );
+        expense.setPersonGroupExpenses(participants);
+        holidays.addExpense(expense);
+
+        assertAll(
+                () -> assertThat(johnMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.valueOf(-6.67).setScale(2, RoundingMode.HALF_UP)),
+                () -> assertThat(janetMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.valueOf(-6.67).setScale(2, RoundingMode.HALF_UP)),
+                () -> assertThat(henryMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.valueOf(13.34).setScale(2, RoundingMode.HALF_UP)),
+                () -> assertThat(holidays.getMembers().stream().map(x -> x.getBalances().get(euro)).reduce(BigDecimal::add).get())
+                        .isEqualTo(BigDecimal.ZERO.setScale(2))
+        );
+        holidays.deleteExpense(expense);
+        assertAll(
+                () -> assertThat(johnMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO.setScale(2)),
+                () -> assertThat(janetMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO.setScale(2)),
+                () -> assertThat(henryMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO.setScale(2)),
+                () -> assertThat(holidays.getMembers().stream().map(x -> x.getBalances().get(euro)).reduce(BigDecimal::add).get())
+                        .isEqualTo(BigDecimal.ZERO.setScale(2))
+        );
+    }
+
+    @Test
+    public void testBalanceAfterAddExpenseWithDifferentWeightsAndWithoutOneMemberAndThenDelete(){
+        Currency euro = Currency.builder()
+                .id(1L)
+                .abbreviation("EUR")
+                .exchangeRate(BigDecimal.ONE)
+                .build();
+        Person john = Person.builder()
+                .id(1L)
+                .name("John Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person janet = Person.builder()
+                .id(2L)
+                .name("Janet Doe")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Person henry = Person.builder()
+                .id(3L)
+                .name("Henry Marks")
+                .balances(Map.of(euro, BigDecimal.ZERO))
+                .preferredCurrency(euro)
+                .build();
+        Group holidays = new Group();
+        holidays.setName("Holidays in France");
+        var startBalance = new HashMap<Currency, BigDecimal>();
+        startBalance.put(euro, BigDecimal.ZERO);
+        PersonGroup johnMember = PersonGroup.builder()
+                .id(1L)
+                .person(john)
+                .group(holidays)
+                .balances(startBalance)
+                .build();
+        PersonGroup janetMember = PersonGroup.builder()
+                .id(2L)
+                .person(janet)
+                .group(holidays)
+                .balances((HashMap<Currency, BigDecimal>)startBalance.clone())
+                .build();
+        PersonGroup henryMember = PersonGroup.builder()
+                .id(3L)
+                .person(henry)
+                .group(holidays)
+                .balances((HashMap<Currency, BigDecimal>)startBalance.clone())
+                .build();
+        holidays.setMembers(List.of(johnMember, janetMember, henryMember));
+        GroupExpense expense = new GroupExpense();
+        expense.setTitle("Bag of Candies (7 total)");
+        expense.setAmount(BigDecimal.valueOf(6));
+        expense.setCreditor(johnMember);
+        expense.setCurrency(euro);
+        List<PersonGroupExpense> participants = List.of(
+                PersonGroupExpense.builder().debtor(johnMember).expense(expense).weight(3).build(),
+                PersonGroupExpense.builder().debtor(henryMember).expense(expense).weight(4).build()
+        );
+        expense.setPersonGroupExpenses(participants);
+        holidays.addExpense(expense);
+
+        assertAll(
+                () -> assertThat(johnMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.valueOf(6-2.57).setScale(2, RoundingMode.HALF_UP)),
+                () -> assertThat(janetMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO),
+                () -> assertThat(henryMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.valueOf(-3.43).setScale(2, RoundingMode.HALF_UP)),
+                () -> assertThat(holidays.getMembers().stream().map(x -> x.getBalances().get(euro)).reduce(BigDecimal::add).get())
+                        .isEqualTo(BigDecimal.ZERO.setScale(2))
+        );
+
+        holidays.deleteExpense(expense);
+        assertAll(
+                () -> assertThat(johnMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO.setScale(2)),
+                () -> assertThat(janetMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO),
+                () -> assertThat(henryMember.getBalances().get(euro))
+                        .isEqualTo(BigDecimal.ZERO.setScale(2)),
+                () -> assertThat(holidays.getMembers().stream().map(x -> x.getBalances().get(euro)).reduce(BigDecimal::add).get())
+                        .isEqualTo(BigDecimal.ZERO.setScale(2))
+        );
+    }
+
+    @Test
     public void testGetSettleUpExpenses() {
         Currency euro = Currency.builder()
                 .id(1L)
@@ -475,7 +643,7 @@ public class PersonGroupTest {
                 () -> assertThat(johnToHenryActualExpense.getCreditor()).isEqualTo(johnToHenryExpectedExpense.getCreditor()),
                 () -> assertThat(johnToHenryActualExpense.getPersonGroupExpenses()).hasSameSizeAs(johnToHenryExpectedExpense.getPersonGroupExpenses()),
 
-                () -> assertThat(johnToJanetActualExpense.getCurrency()).isEqualTo(johnToJanetExpectedExpense.getCurrency()),
+                () ->  assertThat(johnToJanetActualExpense.getCurrency()).isEqualTo(johnToJanetExpectedExpense.getCurrency()),
                 () -> assertThat(johnToJanetActualExpense.getAmount()).isEqualTo(johnToJanetExpectedExpense.getAmount()),
                 () -> assertThat(johnToJanetActualExpense.getCreditor()).isEqualTo(johnToJanetExpectedExpense.getCreditor()),
                 () -> assertThat(johnToJanetActualExpense.getPersonGroupExpenses()).hasSameSizeAs(johnToJanetExpectedExpense.getPersonGroupExpenses())
