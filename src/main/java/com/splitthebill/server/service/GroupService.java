@@ -105,6 +105,13 @@ public class GroupService {
         groupExpenseRepository.save(groupExpense);
     }
 
+    public void deleteExpense(Long expenseId) {
+        GroupExpense expense = groupExpenseRepository.findById(expenseId)
+                .orElseThrow(() -> new EntityNotFoundException("There is no expense with the given id"));
+        Group group = expense.getGroup();
+        group.deleteExpense(expense);
+    }
+
     public void addGroupMember(Long groupId, Long personId) {
         Group group = this.getGroupById(groupId);
         Person person = personService.getPersonById(personId);

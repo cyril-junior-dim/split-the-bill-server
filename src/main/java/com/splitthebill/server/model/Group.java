@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -44,14 +43,40 @@ public class Group {
         expenses.add(expense);
         BigDecimal amount = expense.getAmount();
         Currency currency = expense.getCurrency();
-        expense.getCreditor().addToBalance(currency, amount);
-        int totalWeight = expense.getTotalWeight();
-        for (PersonGroupExpense personGroupExpense : expense.getPersonGroupExpenses()) {
-            BigDecimal splitRatio = BigDecimal.valueOf(personGroupExpense.getWeight())
-                    .divide(BigDecimal.valueOf(totalWeight), 2, RoundingMode.HALF_UP);
-            BigDecimal toSubtract = amount.multiply(splitRatio);
-            personGroupExpense.getDebtor().subtractFromBalance(currency, toSubtract);
+        PersonGroup creditor = expense.getCreditor();
+        creditor.addToBalance(currency, amount);
+        BigDecimal totalWeight = BigDecimal.valueOf(expense.getTotalWeight());
+        BigDecimal amountLeft = amount;
+        List<PersonGroupExpense> participants = expense.getPersonGroupExpenses();
+        for (PersonGroupExpense participant : participants) {
+            BigDecimal splitRatio = BigDecimal.valueOf(participant.getWeight())
+                    .divide(totalWeight, 4, RoundingMode.HALF_UP);
+            BigDecimal toSubtract = amount.multiply(splitRatio).setScale(2, RoundingMode.HALF_UP);
+            participant.getDebtor().subtractFromBalance(currency, toSubtract);
+            amountLeft = amountLeft.subtract(toSubtract);
         }
+        if (!amountLeft.equals(BigDecimal.ZERO))
+            creditor.addToBalance(currency, amountLeft.negate());
+    }
+
+    public void deleteExpense(GroupExpense expense) {
+        expenses.remove(expense);
+        PersonGroup creditor = expense.getCreditor();
+        BigDecimal amount = expense.getAmount();
+        Currency currency = expense.getCurrency();
+        creditor.addToBalance(currency, amount);
+        BigDecimal totalWeight = BigDecimal.valueOf(expense.getTotalWeight());
+        BigDecimal amountLeft = amount;
+        List<PersonGroupExpense> participants = expense.getPersonGroupExpenses();
+        for (PersonGroupExpense participant : participants){
+            BigDecimal splitRatio = BigDecimal.valueOf(participant.getWeight())
+                    .divide(totalWeight, 4, RoundingMode.HALF_UP);
+            BigDecimal toRecover = amount.multiply(splitRatio).setScale(2, RoundingMode.HALF_UP);
+            participant.getDebtor().addToBalance(currency, toRecover);
+            amountLeft = amountLeft.add(toRecover);
+        }
+        if (!amountLeft.equals(BigDecimal.ZERO))
+            creditor.addToBalance(currency, amountLeft.negate());
     }
 
     public void addMember(PersonGroup member) {

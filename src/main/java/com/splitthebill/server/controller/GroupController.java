@@ -55,6 +55,20 @@ public class GroupController {
         }
     }
 
+    @DeleteMapping(path = "/{groupId}/expenses")
+    public ResponseEntity<?> deleteExpense(@PathVariable Long groupId, @RequestParam Long expenseId,
+                                           Authentication authentication) {
+        try {
+            Person person = jwtUtils.getPersonFromAuthentication(authentication);
+            if (!person.isMemberOfGroup(groupId))
+                throw new IllegalAccessException("Must be a member of the group");
+            groupService.deleteExpense(expenseId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping(path = "/{groupId}")
     public ResponseEntity<?> getGroupById(@PathVariable Long groupId, Authentication authentication) {
         try {
