@@ -473,7 +473,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_get_all_notifications">Get all notifications</a></li>
 <li><a href="#_mark_notification_reviewed">Mark notification reviewed</a></li>
-<li><a href="#_send_pending_debt_reminder">Send pending debt reminder</a></li>
 </ul>
 </li>
 <li><a href="#_group">Group</a>
@@ -484,6 +483,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_add_group_member">Add group member</a></li>
 <li><a href="#_create_group_expense">Create group expense</a></li>
 <li><a href="#_get_settle_up_expenses">Get settle up expenses</a></li>
+<li><a href="#_send_pending_debt_reminder">Send pending debt reminder</a></li>
+</ul>
+</li>
+<li><a href="#_own_expenses">Own expenses</a>
+<ul class="sectlevel2">
+<li><a href="#_get_all_own_expenses">Get all own expenses</a></li>
+<li><a href="#_add_own_expense">Add own expense</a></li>
+</ul>
+</li>
+<li><a href="#_currency">Currency</a>
+<ul class="sectlevel2">
+<li><a href="#_get_all_currencies">Get all currencies</a></li>
 </ul>
 </li>
 </ul>
@@ -1832,12 +1843,6 @@ Content-Length: 130
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_send_pending_debt_reminder"><a class="link" href="#_send_pending_debt_reminder">Send pending debt reminder</a></h3>
-<div class="paragraph">
-<p>To be implemented</p>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -2500,20 +2505,20 @@ Content-Length: 345
   "title" : "Settle up",
   "creditorId" : 1,
   "debtors" : [ {
-    "debtorId" : 3,
-    "weight" : 1
-  } ],
-  "amount" : 10,
-  "currencyAbbreviation" : "USD"
-}, {
-  "title" : "Settle up",
-  "creditorId" : 1,
-  "debtors" : [ {
     "debtorId" : 2,
     "weight" : 1
   } ],
   "amount" : 3.3,
   "currencyAbbreviation" : "EUR"
+}, {
+  "title" : "Settle up",
+  "creditorId" : 1,
+  "debtors" : [ {
+    "debtorId" : 3,
+    "weight" : 1
+  } ],
+  "amount" : 10,
+  "currencyAbbreviation" : "USD"
 } ]</code></pre>
 </div>
 </div>
@@ -2567,12 +2572,386 @@ Content-Length: 345
 </tbody>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_send_pending_debt_reminder"><a class="link" href="#_send_pending_debt_reminder">Send pending debt reminder</a></h3>
+<div class="paragraph">
+<p>When owed money one may request to broadcast payback reminder to the group members having negative balance.</p>
+</div>
+<div class="paragraph">
+<p>Sample request</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /groups/1/sendDebtReminder HTTP/1.1
+Host: softstone.pl:8443</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Path parameters
+./groups/{groupId}/sendDebtReminder</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>groupId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The id of a group</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample response</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_own_expenses"><a class="link" href="#_own_expenses">Own expenses</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Users have the ability to track their own, private expenses and analyze them.</p>
+</div>
+<div class="sect2">
+<h3 id="_get_all_own_expenses"><a class="link" href="#_get_all_own_expenses">Get all own expenses</a></h3>
+<div class="paragraph">
+<p>Sample request</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /expenses HTTP/1.1
+Host: softstone.pl:8443</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample response</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-Frame-Options: DENY
+Content-Length: 365
+
+[ {
+  "ownExpenseId" : 1,
+  "title" : "Cinema",
+  "amount" : 10,
+  "created" : "2021-01-28T12:13:55.411+00:00",
+  "receiptPhoto" : null,
+  "currencyAbbreviation" : "EUR"
+}, {
+  "ownExpenseId" : 2,
+  "title" : "Gift for Mike",
+  "amount" : 20,
+  "created" : "2021-01-28T12:13:55.411+00:00",
+  "receiptPhoto" : null,
+  "currencyAbbreviation" : "EUR"
+} ]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Response fields</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].ownExpenseId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of own expense</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of own expense</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].amount</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amount of money spent</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].created</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Date of own expense creation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].receiptPhoto</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path to the receipt photo</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].currencyAbbreviation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The currency used for expense</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_add_own_expense"><a class="link" href="#_add_own_expense">Add own expense</a></h3>
+<div class="paragraph">
+<p>Sample request</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /expenses HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 105
+Host: softstone.pl:8443
+
+{
+  "title" : "Cinema",
+  "amount" : 10.2,
+  "currencyAbbreviation" : "EUR",
+  "receiptPhoto" : ""
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Request fields</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of an expense</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>amount</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amount spent</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>currencyAbbreviation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Currency used</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample response</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-Frame-Options: DENY
+Content-Length: 176
+
+{
+  "ownExpenseId" : 1,
+  "title" : "Cinema",
+  "amount" : 10.2,
+  "created" : "2021-01-28T12:13:55.394+00:00",
+  "receiptPhoto" : "",
+  "currencyAbbreviation" : "EUR"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Response fields</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ownExpenseId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of own expense</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of own expense</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>amount</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amount of money spent</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>created</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Date of own expense creation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>receiptPhoto</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path to the receipt photo</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>currencyAbbreviation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The currency used for expense</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_currency"><a class="link" href="#_currency">Currency</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_get_all_currencies"><a class="link" href="#_get_all_currencies">Get all currencies</a></h3>
+<div class="paragraph">
+<p>Sample request</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /currencies HTTP/1.1
+Host: softstone.pl:8443</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample response</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-Frame-Options: DENY
+Content-Length: 141
+
+[ {
+  "id" : 1,
+  "abbreviation" : "EUR",
+  "exchangeRate" : 1
+}, {
+  "id" : 2,
+  "abbreviation" : "USD",
+  "exchangeRate" : 0.85
+} ]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Response fields</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of a currency</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].abbreviation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abbreviation of a currency</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].exchangeRate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exchange rate with relation to EUR.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-01-27 16:38:46 +0100
+Last updated 2021-01-28 13:00:51 +0100
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

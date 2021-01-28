@@ -45,6 +45,7 @@ public class PersonController {
     public ResponseEntity<?> createPerson(@RequestBody PersonCreateDto personCreateDto, Authentication authentication) {
         try {
             UserAccount userAccount = jwtUtils.getUserAccountFromAuthentication(authentication);
+            System.out.println(userAccount);
             if (userAccount.getPerson() != null)
                 throw new IllegalAccessException("There's already a person assigned.");
             Person createdPerson = personService.createPerson(userAccount, personCreateDto);
