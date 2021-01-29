@@ -79,7 +79,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("Group has not been found."));
     }
 
-    public void addExpense(Long groupId, GroupExpenseCreateDto expenseDto) throws EntityNotFoundException {
+    public void addExpense(Long groupId, GroupExpenseCreateDto expenseDto, Person issuer) throws EntityNotFoundException {
         GroupExpense groupExpense = new GroupExpense();
         Group group = getGroupById(groupId);
         Currency currency = currencyRepository.findCurrencyByAbbreviation(expenseDto.currencyAbbreviation)
@@ -106,15 +106,31 @@ public class GroupService {
         groupExpense.setPersonGroupExpenses(debtors);
         group.addExpense(groupExpense);
         groupExpenseRepository.save(groupExpense);
+        notificationService.sendNotificationToUserAccounts(
+                "New expense in " + group.getName(),
+                creditor.getPerson().getName() + " paid " + groupExpense.getAmount() + " "
+                        + groupExpense.getCurrency().getAbbreviation() + " in group " + group.getName() +
+                        ". Don't wait too long to pay them back!",
+                debtors.stream()
+                        .filter(d -> !d.getDebtor().getPerson().equals(issuer))
+                        .map(d -> d.getDebtor().getPerson().getUserAccount())
+                        .collect(Collectors.toList())
+        );
     }
 
-    public void deleteExpense(Long expenseId) {
+    public void deleteExpense(Long expenseId, Person issuer) {
         GroupExpense expense = groupExpenseRepository.findById(expenseId)
                 .orElseThrow(() -> new EntityNotFoundException("There is no expense with the given id"));
         Group group = expense.getGroup();
         groupExpenseRepository.delete(expense);
         group.deleteExpense(expense);
         groupRepository.save(group);
+        notificationService.sendNotificationToUserAccount(
+                "Expense deleted",
+                issuer.getName() + " has just removed expense '" + expense.getTitle() + "' in group "
+                        + group.getName() + " where You were a creditor.",
+                expense.getCreditor().getPerson().getUserAccount()
+        );
     }
 
     public void addGroupMember(Long groupId, Long personId) {
@@ -124,6 +140,11 @@ public class GroupService {
         personGroupRepository.save(member);
         group.addMember(member);
         groupRepository.save(group);
+        notificationService.sendNotificationToUserAccount(
+                "Welcome to " + group.getName() + "!",
+                "You have just been added to " + group.getName() + ". Have fun sharing expenses!",
+                member.getPerson().getUserAccount()
+        );
     }
 
     public void sendDebtNotification(Person issuer, Long groupId) {

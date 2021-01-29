@@ -356,7 +356,7 @@ public class GroupControllerTest {
         portugalTrip.setMembers(new ArrayList<>(List.of(johnMember)));
 
         when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(johnDoe);
-        doNothing().when(groupService).addExpense(1L, mock(GroupExpenseCreateDto.class));
+        doNothing().when(groupService).addExpense(1L, mock(GroupExpenseCreateDto.class), johnDoe);
 
         mockMvc.perform(post("/groups/{groupId}/expenses", 1)
                 .contentType(MediaType.APPLICATION_JSON)

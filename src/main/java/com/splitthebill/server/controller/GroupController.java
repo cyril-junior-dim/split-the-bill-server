@@ -63,7 +63,7 @@ public class GroupController {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group");
-            groupService.deleteExpense(expenseId);
+            groupService.deleteExpense(expenseId, person);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | IllegalAccessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -105,7 +105,7 @@ public class GroupController {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
             if (!person.isMemberOfGroup(groupId))
                 throw new IllegalAccessException("Must be a member of the group.");
-            groupService.addExpense(groupId, expenseDto);
+            groupService.addExpense(groupId, expenseDto, person);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | IllegalAccessException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

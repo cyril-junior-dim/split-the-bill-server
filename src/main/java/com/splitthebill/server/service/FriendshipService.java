@@ -20,6 +20,9 @@ public class FriendshipService {
     @NonNull
     private FriendshipRepository friendshipRepository;
 
+    @NonNull
+    private NotificationService notificationService;
+
     public Friendship getFriendshipById(Long id){
         return friendshipRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
@@ -62,6 +65,11 @@ public class FriendshipService {
         Friendship receiverToIssuer = new Friendship(receiver, issuer, false);
         issuerToReceiver = friendshipRepository.save(issuerToReceiver);
         friendshipRepository.save(receiverToIssuer);
+        notificationService.sendNotificationToUserAccount(
+                "New friendship request",
+                "You have a new friendship request from " + issuer.getName(),
+                receiver.getUserAccount()
+        );
         return issuerToReceiver;
     }
 
@@ -69,6 +77,12 @@ public class FriendshipService {
         Friendship acceptedFriendship = friendshipRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         acceptedFriendship.setConfirmed(true);
         acceptedFriendship = friendshipRepository.save(acceptedFriendship);
+        notificationService.sendNotificationToUserAccount(
+                "Accepted friendship",
+                acceptedFriendship.getPerson1().getName() + " has accepted your friendship request. " +
+                        "You are friends now!",
+                acceptedFriendship.getPerson2().getUserAccount()
+        );
         return acceptedFriendship;
     }
 
