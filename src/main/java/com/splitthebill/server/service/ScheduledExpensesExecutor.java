@@ -59,7 +59,8 @@ public class ScheduledExpensesExecutor {
                         createDto.debtors.add(expenseParticipantCreateDto);
                     }
             );
-            groupService.addExpense(scheduledExpense.getGroup().getId(), createDto);
+            groupService.addExpense(scheduledExpense.getGroup().getId(), createDto,
+                    scheduledExpense.getCreditor().getPerson());
             scheduledExpense.getSchedule().tickTrigger();
             scheduleRepository.save(scheduledExpense.getSchedule());
         });
