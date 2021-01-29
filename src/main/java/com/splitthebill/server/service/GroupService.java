@@ -112,7 +112,7 @@ public class GroupService {
                         + groupExpense.getCurrency().getAbbreviation() + " in group " + group.getName() +
                         ". Don't wait too long to pay them back!",
                 debtors.stream()
-                        .filter(d -> !d.getDebtor().getPerson().equals(issuer))
+                        .filter(d -> !d.getDebtor().getPerson().getId().equals(issuer.getId()))
                         .map(d -> d.getDebtor().getPerson().getUserAccount())
                         .collect(Collectors.toList())
         );
@@ -163,7 +163,7 @@ public class GroupService {
                         .stream()
                         .filter(personGroup -> personGroup.getBalances().containsKey(balance.getKey()))
                         .filter(personGroup -> personGroup.getBalances().get(balance.getKey()).compareTo(BigDecimal.ZERO) < 0)
-                        .filter(personGroup -> !personGroup.equals(membership))
+                        .filter(personGroup -> !personGroup.getId().equals(membership.getId()))
                         .map(personGroup -> personGroup.getPerson().getUserAccount())
                         .collect(Collectors.toList())
                 );

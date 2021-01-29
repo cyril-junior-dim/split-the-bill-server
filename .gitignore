@@ -40,3 +40,5 @@ application.properties
 ### SSL/TLS certificates and keys ###
 src/main/resources/*.jks
 src/main/resources/*.p12
+
+*.sql

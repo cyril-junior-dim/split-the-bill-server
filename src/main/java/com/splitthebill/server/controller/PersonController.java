@@ -68,7 +68,7 @@ public class PersonController {
     }
 
     private PersonReadDto assembleLinks(Authentication authentication, Person person) {
-        PersonReadDto personReadDto = new PersonReadDto(person.getId(), person.getName(), person.getBalances());
+        PersonReadDto personReadDto = new PersonReadDto(person.getId(), person.getName(), person.getBalancesM());
         Link selfLink = linkTo(methodOn(PersonController.class).getPerson(authentication)).withSelfRel();
         Link userAccountLink = linkTo(methodOn(UserAccountController.class).getUserAccount(authentication)).withRel("userAccount");
         Link friendshipsLink = linkTo(methodOn(FriendshipController.class).getAllFriendships(authentication)).withRel("friendships");

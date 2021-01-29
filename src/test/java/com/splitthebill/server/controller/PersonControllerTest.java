@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,8 @@ public class PersonControllerTest {
                 .name("Test Person")
                 .userAccount(mock(UserAccount.class))
                 .balances(Map.of(eur, new BigDecimal("10.75")))
+                .preferredCurrency(new Currency("USD", BigDecimal.ONE))
+                .personGroups(new ArrayList<>())
                 .build();
         when(jwtUtils.getPersonFromAuthentication(any(Authentication.class))).thenReturn(person);
         mockMvc.perform(get("/people"))
@@ -95,6 +98,8 @@ public class PersonControllerTest {
         Person expectedPerson = Person.builder()
                 .name("Test Person")
                 .userAccount(mock(UserAccount.class))
+                .preferredCurrency(new Currency("USD", BigDecimal.ONE))
+                .personGroups(new ArrayList<>())
                 .balances(Map.of(new Currency("EUR", new BigDecimal("1")), BigDecimal.ZERO))
                 .build();
         when(jwtUtils.getUserAccountFromAuthentication(any(Authentication.class))).thenReturn(mock(UserAccount.class));
@@ -146,6 +151,8 @@ public class PersonControllerTest {
                 .thenAnswer(p -> Person.builder()
                         .id(1L)
                         .name("Updated Person")
+                        .preferredCurrency(new Currency("USD", BigDecimal.ONE))
+                        .personGroups(new ArrayList<>())
                         .userAccount(mock(UserAccount.class))
                         .balances(Map.of(new Currency("USD", new BigDecimal("0.85")), BigDecimal.ZERO))
                         .build()

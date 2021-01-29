@@ -1,6 +1,7 @@
 package com.splitthebill.server.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.splitthebill.server.model.Currency;
 import com.splitthebill.server.model.expense.GroupExpense;
 import com.splitthebill.server.model.expense.OwnExpense;
@@ -76,6 +77,20 @@ public class Person extends RepresentationModel<Person> {
 
     public void addOwnExpense(OwnExpense ownExpense) {
         ownExpenses.add(ownExpense);
+    }
+
+    public Map<Currency, BigDecimal> getBalancesM() {
+        Map<Currency, BigDecimal> balanceMap = new HashMap<>();
+        balanceMap.put(preferredCurrency, BigDecimal.ZERO);
+        return personGroups.stream()
+                .map(PersonGroup::getBalances)
+                .reduce(balanceMap, (all, current) -> {
+                    current.forEach(
+                            (currency, balance) ->
+                                    all.put(currency, all.getOrDefault(currency, BigDecimal.ZERO)
+                                            .add(current.get(currency))));
+                    return all;
+                });
     }
 
 }
