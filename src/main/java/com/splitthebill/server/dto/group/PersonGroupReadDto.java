@@ -20,7 +20,7 @@ public class PersonGroupReadDto {
         this.groupId = member.getGroup().getId();
         this.groupMemberId = member.getId();
         this.personId = member.getPerson().getId();
-        this.name = member.getGroup().getName();
+        this.name = member.getPerson().getName();
         this.memberBalance = member.getBalances();
     }
 }

@@ -110,7 +110,7 @@ public class GroupControllerTest {
                                 fieldWithPath("[].personId")
                                         .description("The identifier of a person."),
                                 fieldWithPath("[].name")
-                                        .description("Name of a group"),
+                                        .description("Name of a person"),
                                 subsectionWithPath("[].memberBalance")
                                         .description("User balance in different currencies in a group.")
                         )));
@@ -260,7 +260,7 @@ public class GroupControllerTest {
                                 fieldWithPath("members[].groupId").description("The identifier of a group."),
                                 fieldWithPath("members[].groupMemberId").description("The identifier of a person and group association."),
                                 fieldWithPath("members[].personId").description("The identifier of a person."),
-                                fieldWithPath("members[].name").description("Name of a group"),
+                                fieldWithPath("members[].name").description("Name of a person"),
                                 subsectionWithPath("members[].memberBalance").description("User balance in different currencies in a group."),
 
                                 fieldWithPath("expenses[].expenseId").description("Id of an expense"),
