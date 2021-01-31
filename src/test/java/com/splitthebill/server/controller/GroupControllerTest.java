@@ -268,7 +268,9 @@ public class GroupControllerTest {
                                 fieldWithPath("expenses[].expenseId").description("Id of an expense"),
                                 fieldWithPath("expenses[].creditorMemberId").description("Id of a creditor (personGroup id)"),
                                 fieldWithPath("expenses[].title").description("Title of an expense"),
-                                subsectionWithPath("expenses[].debtorMemberIds").description("Ids of group members that owe the creditor."),
+                                fieldWithPath("expenses[].debtors[].debtorId").description("Participant's group member id."),
+                                fieldWithPath("expenses[].debtors[].name").description("Participant's name."),
+                                fieldWithPath("expenses[].debtors[].weight").description("Participant's share weight."),
                                 fieldWithPath("expenses[].amount").description("The amount of an expense"),
                                 fieldWithPath("expenses[].currency").description("Currency abbreviation used for expense")
                         )));
