@@ -9,7 +9,6 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@EnableScheduling
 public class GeneralConfig {
 
     @Bean
