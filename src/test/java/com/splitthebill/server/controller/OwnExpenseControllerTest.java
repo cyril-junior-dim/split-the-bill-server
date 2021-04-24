@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "app.scheduling.enable=false")
+@TestPropertySource(properties = "splitthebill.app.scheduling-enabled=false")
 public class OwnExpenseControllerTest {
 
     @MockBean
