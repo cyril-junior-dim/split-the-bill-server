@@ -46,9 +46,10 @@ public class GroupController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupCreateDto group) {
+    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupCreateDto group, Authentication authentication) {
         try {
-            Group createdGroup = groupService.createGroup(group);
+            Person issuer = jwtUtils.getPersonFromAuthentication(authentication);
+            Group createdGroup = groupService.createGroup(group, issuer);
             return ResponseEntity.ok(new GroupReadDto(createdGroup));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

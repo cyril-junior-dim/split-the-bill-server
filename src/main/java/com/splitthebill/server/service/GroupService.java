@@ -13,6 +13,7 @@ import com.splitthebill.server.model.expense.scheduled.FrequencyUnit;
 import com.splitthebill.server.model.expense.scheduled.Schedule;
 import com.splitthebill.server.model.expense.scheduled.group.ScheduledGroupExpense;
 import com.splitthebill.server.model.expense.scheduled.group.ScheduledPersonGroupExpense;
+import com.splitthebill.server.model.user.Friendship;
 import com.splitthebill.server.model.user.Person;
 import com.splitthebill.server.model.user.PersonGroup;
 import com.splitthebill.server.model.user.UserAccount;
@@ -46,6 +47,9 @@ public class GroupService {
     private final PersonService personService;
 
     @NonNull
+    private final FriendshipService friendshipService;
+
+    @NonNull
     private final PersonGroupRepository personGroupRepository;
 
     @NonNull
@@ -58,13 +62,19 @@ public class GroupService {
     private final ScheduledGroupExpenseRepository scheduledGroupExpenseRepository;
 
 
-    public Group createGroup(GroupCreateDto groupDto) throws EntityNotFoundException {
+    public Group createGroup(GroupCreateDto groupDto, Person issuer) throws EntityNotFoundException {
         Group group = new Group();
         group.setName(groupDto.name);
+        group.setPhotoPath(groupDto.photoPath);
         group = groupRepository.save(group);
         LinkedList<PersonGroup> members = new LinkedList<>();
+        PersonGroup issuerPersonGroup = new PersonGroup(issuer, group);
+        issuerPersonGroup = personGroupRepository.save(issuerPersonGroup);
+        members.add(issuerPersonGroup);
         for (Long id : groupDto.membersIds) {
-            Person person = personService.getPersonById(id);
+            Friendship friendship = friendshipService.getFriendshipById(id);
+            Person person = friendship.getPerson2();
+            System.out.println(person.getId());
             PersonGroup personGroup = new PersonGroup(person, group);
             personGroup = personGroupRepository.save(personGroup);
             members.add(personGroup);
