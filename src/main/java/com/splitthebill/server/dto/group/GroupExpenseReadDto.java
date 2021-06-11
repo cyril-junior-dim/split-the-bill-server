@@ -4,6 +4,7 @@ import com.splitthebill.server.model.expense.GroupExpense;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ public class GroupExpenseReadDto {
     List<Long> debtorMemberIds;
     BigDecimal amount;
     String currency;
+    LocalDateTime created;
 
     public GroupExpenseReadDto(GroupExpense expense) {
         this.expenseId = expense.getId();
@@ -26,5 +28,6 @@ public class GroupExpenseReadDto {
                 .collect(Collectors.toList());
         this.amount = expense.getAmount();
         this.currency = expense.getCurrency().getAbbreviation();
+        this.created = expense.getCreated();
     }
 }

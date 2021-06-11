@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 public class PersonGroupExpense {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Min(0)

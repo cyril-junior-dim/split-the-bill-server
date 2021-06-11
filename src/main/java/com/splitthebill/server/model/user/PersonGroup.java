@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class PersonGroup {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @CreationTimestamp
