@@ -136,7 +136,7 @@ public class GroupControllerTest {
                 .userAccount(mock(UserAccount.class))
                 .build();
         List<Person> mockPersonRepository = List.of(johnDoe, janeDoe);
-        when(groupService.createGroup(any(GroupCreateDto.class))).thenAnswer(
+        when(groupService.createGroup(any(GroupCreateDto.class), any(Person.class))).thenAnswer(
                 p -> {
                     GroupCreateDto groupDto = p.getArgument(0, GroupCreateDto.class);
                     Group portugalTrip = Group.builder()

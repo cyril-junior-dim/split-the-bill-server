@@ -14,7 +14,7 @@ public class GroupExpenseReadDto {
     Long expenseId;
     Long creditorMemberId;
     String title;
-    List<Long> debtorMemberIds;
+    List<DebtorReadDto> debtors;
     BigDecimal amount;
     String currency;
     LocalDateTime created;
@@ -23,8 +23,11 @@ public class GroupExpenseReadDto {
         this.expenseId = expense.getId();
         this.creditorMemberId = expense.getCreditor().getId();
         this.title = expense.getTitle();
-        this.debtorMemberIds = expense.getPersonGroupExpenses().stream()
-                .map(participant -> participant.getDebtor().getId())
+        this.debtors = expense.getPersonGroupExpenses().stream()
+                .map(participant -> new DebtorReadDto(
+                        participant.getDebtor().getId(),
+                        participant.getDebtor().getPerson().getName(),
+                        participant.getWeight()))
                 .collect(Collectors.toList());
         this.amount = expense.getAmount();
         this.currency = expense.getCurrency().getAbbreviation();

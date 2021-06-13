@@ -9,6 +9,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,9 +21,12 @@ public class StatisticsService {
 
     @NonNull GroupExpenseRepository groupExpenseRepository;
 
-    public Map<String, List<GroupExpenseReadDto>> getAllPersonExpenses(Person person) {
+    public Map<String, Map<LocalDate, List<GroupExpenseReadDto>>> getAllPersonExpenses(Person person) {
         List<GroupExpense> personExpenses = groupExpenseRepository.getAllByCreditor_Id(person.getId());
-        return personExpenses.stream().map(GroupExpenseReadDto::new).collect(Collectors.groupingBy(GroupExpenseReadDto::getCurrency));
+        return personExpenses.stream()
+                .map(GroupExpenseReadDto::new)
+                .collect(Collectors.groupingBy(GroupExpenseReadDto::getCurrency,
+                        Collectors.groupingBy(groupExpenseReadDto -> groupExpenseReadDto.getCreated().toLocalDate())));
     }
 
 }

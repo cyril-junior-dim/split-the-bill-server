@@ -15,6 +15,5 @@ public class GroupCreateDto {
     @NonNull
     public List<Long> membersIds;
 
-    //TODO String photoPath;
-
+    public String photoPath;
 }

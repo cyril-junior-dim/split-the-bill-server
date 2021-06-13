@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class StatisticsController {
     public ResponseEntity<?> getAllPersonExpenses(Authentication authentication) {
         try {
             Person person = jwtUtils.getPersonFromAuthentication(authentication);
-            Map<String, List<GroupExpenseReadDto>> personExpenses = statisticsService.getAllPersonExpenses(person);
+            Map<String, Map<LocalDate, List<GroupExpenseReadDto>>> personExpenses = statisticsService.getAllPersonExpenses(person);
             return ResponseEntity.ok(personExpenses);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
