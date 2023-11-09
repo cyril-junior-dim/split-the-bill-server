@@ -1,10 +1,7 @@
 # Split The Bill Server
 
 <h2>Description</h2>
-The aim of our application is to provide people with a simple tool that allows people to wisely split and manage shared expenses. Calculating exact amounts due, as well as working out effective systems of compensating each other will become a straightforward and logged process.
-<br />
-<br />
-The front-end implementation requires that the installation package be run to completion. After initial installation, users have limited access to the application unless they register with valid credentials. The target device will also be required to support the Java SDK.
+A server implementation of the Split-The-Bill app including database management oof the postgreSQL database and tokenization services for authentication. The aim of the application is to provide people with a simple tool that allows people to wisely split and manage shared expenses. Calculating exact amounts due, as well as working out effective systems of compensating each other will become a straightforward and logged process.
 <br />
 <br />
 
